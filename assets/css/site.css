@@ -295,3 +295,22 @@ body[dir="rtl"] .mb-text{font-family:var(--arabic);font-size:calc(var(--d) * .09
   .marks{gap:12px}
   .mark-badge{--d:96px}
 }
+
+/* ---------- SAUCE CLOUD ---------- */
+.sauce-cloud{display:flex;flex-wrap:wrap;gap:9px}
+.sauce{font-size:13px;font-weight:600;padding:9px 16px;border-radius:100px;
+  border:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.66);transition:.2s}
+.sauce:hover{border-color:var(--yellow);color:var(--yellow)}
+.sauce.hot{border-color:rgba(235,33,74,.5);color:var(--red)}
+
+/* ---------- FOOTER SOCIAL ---------- */
+.foot-social{display:flex;flex-direction:column;gap:7px;font-size:13.5px}
+.foot-social a{color:rgba(255,255,255,.62);transition:.2s}
+.foot-social a:hover{color:var(--yellow)}
+.drawer-social{display:flex;gap:18px;font-size:13px;margin-bottom:20px;padding-top:4px}
+.drawer-social a{color:rgba(255,255,255,.5);transition:.2s}
+.drawer-social a:hover{color:var(--yellow)}
+
+/* ---------- EMBEDDED MAP ---------- */
+.map-wrap{margin-top:34px;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.12);line-height:0}
+.map-wrap iframe{width:100%;height:clamp(280px,45vh,460px);border:0;filter:invert(.92) hue-rotate(180deg) saturate(.35)}

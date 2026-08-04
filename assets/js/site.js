@@ -74,6 +74,16 @@ function initDrawer(){
   document.addEventListener('keydown', e => { if(e.key === 'Escape') shut(); });
 }
 
+/* ---------- sauces (old site: "all sauces freshly homemade, no preservatives") ---------- */
+async function initSauces(){
+  const wrap = document.getElementById('sauceCloud');
+  if(!wrap) return;
+  const data = await fetch('assets/data/menu.json').then(r => r.json());
+  const hot = ['Buffalo Sauce','Dynamite Sauce','Spicy Dip','Chipotle Sauce'];
+  wrap.innerHTML = data.sauces.map(s =>
+    `<span class="sauce${hot.includes(s) ? ' hot' : ''}">${s}</span>`).join('');
+}
+
 /* ---------- branches ---------- */
 async function initBranches(){
   const grid = document.getElementById('locGrid');
@@ -170,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initLang();
   initDrawer();
   initMarks();
+  initSauces();
   initBranches();
   initMenu();
 });
