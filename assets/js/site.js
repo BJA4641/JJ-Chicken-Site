@@ -7,13 +7,36 @@ const ORDER_URL = 'https://order.jjchicken.com';
 const CALL_CENTRE = '600545554';
 const WHATSAPP = ''; // TODO: confirm official WhatsApp number with Almed
 
-/* ---------- marquee (brand book asset) ---------- */
+/* ---------- marquee (brand asset — the five quality marks) ---------- */
+const MARQUEE_EN = ['HORMONE FREE','GRAIN FED','HALAL','CHARCOAL GRILLED','FRESHLY PREPARED'];
+const MARQUEE_AR = ['خالٍ من الهرمونات','مغذّى بالحبوب','حلال','مشوي على الفحم','يُحضَّر طازجاً'];
+
 function initMarquee(){
   const mq = document.getElementById('mq');
   if(!mq) return;
-  let s = '';
-  for(let i=0;i<12;i++) s += '<span>HORMONE FREE<i> · </i>GRAIN FEED<i> · </i></span>';
-  mq.innerHTML = s + s;
+  const ar = document.documentElement.lang === 'ar';
+  const words = ar ? MARQUEE_AR : MARQUEE_EN;
+  let run = '';
+  for(let i = 0; i < 4; i++)
+    run += words.map(w => `<span>${w}<i> ★ </i></span>`).join('');
+  mq.innerHTML = run + run;
+}
+
+/* ---------- quality marks ---------- */
+async function initMarks(){
+  const wrap = document.getElementById('marks');
+  if(!wrap) return;
+  const data = await fetch('assets/data/marks.json').then(r => r.json());
+  wrap.innerHTML = data.marks.map(m => `
+    <div class="mark-badge" data-id="${m.id}">
+      <span class="mb-star">★</span>
+      <span class="mb-text">
+        <span class="en">${m.l1}${m.l2 ? '<br>' + m.l2 : ''}</span>
+        <span class="ar">${m.l1Ar}${m.l2Ar ? '<br>' + m.l2Ar : ''}</span>
+      </span>
+      <span class="mb-rule"></span>
+      <span class="mb-dots">·····</span>
+    </div>`).join('');
 }
 
 /* ---------- language ---------- */
@@ -30,6 +53,7 @@ function initLang(){
     document.documentElement.lang = lang;
     btn.textContent = ar ? 'EN' : 'عربي';
     localStorage.setItem('jj-lang', lang);
+    initMarquee();
   }
 }
 
@@ -145,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMarquee();
   initLang();
   initDrawer();
+  initMarks();
   initBranches();
   initMenu();
 });

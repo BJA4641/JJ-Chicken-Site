@@ -121,7 +121,7 @@ body[dir="rtl"] .drawer-nav a{font-family:var(--arabic);font-size:24px}
 body[dir="rtl"] .marquee-track{animation-direction:reverse}
 @keyframes slide{to{transform:translateX(-50%)}}
 .marquee-track span{font-family:var(--display);font-size:clamp(15px,2.4vw,22px);letter-spacing:.09em;padding:0 18px;white-space:nowrap}
-.marquee-track i{font-style:normal;opacity:.42}
+.marquee-track i{font-style:normal;opacity:.34;font-size:.72em;vertical-align:middle}
 
 /* ---------- SECTIONS ---------- */
 .sec{padding:clamp(64px,10vw,120px) var(--pad);position:relative}
@@ -265,3 +265,33 @@ footer{padding:clamp(48px,7vw,80px) var(--pad) 96px;border-top:1px solid rgba(25
 .statement p{font-size:clamp(28px,5.6vw,68px);line-height:1;max-width:20ch}
 .statement em{font-style:normal;color:var(--yellow);display:block}
 body[dir="rtl"] .statement p{font-family:var(--arabic);line-height:1.25}
+
+/* ---------- QUALITY MARKS ----------
+   Rebuilt from Almed's supplied badge set: black disc, gold star,
+   condensed caps, gold rule, ruled dots. Scalable, so it stays crisp
+   and the wording is editable in marks.json rather than baked into art. */
+.marks-band{padding:clamp(44px,7vw,80px) var(--pad);background:var(--smoke);border-block:1px solid rgba(255,255,255,.08)}
+.marks{display:flex;gap:clamp(14px,3vw,34px);flex-wrap:wrap;justify-content:center;align-items:flex-start}
+.mark-badge{
+  --d:clamp(104px,15vw,142px);
+  width:var(--d);height:var(--d);border-radius:50%;
+  background:var(--black);border:1px solid rgba(250,210,44,.55);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;padding:12px 10px;text-align:center;position:relative;
+  box-shadow:inset 0 0 0 3px var(--black),inset 0 0 0 4px rgba(250,210,44,.22);
+  transition:.28s;
+}
+.mark-badge:hover{transform:translateY(-4px) rotate(-2deg);border-color:var(--yellow)}
+.mb-star{color:var(--yellow);font-size:calc(var(--d) * .13);line-height:1}
+.mb-text{
+  font-family:var(--display);text-transform:uppercase;
+  font-size:calc(var(--d) * .108);line-height:1.18;letter-spacing:.06em;color:var(--white);
+}
+body[dir="rtl"] .mb-text{font-family:var(--arabic);font-size:calc(var(--d) * .095);letter-spacing:0}
+.mb-rule{display:block;width:52%;height:calc(var(--d) * .045);background:var(--yellow);border-radius:1px}
+.mb-dots{color:var(--yellow);font-size:calc(var(--d) * .1);letter-spacing:.12em;line-height:.6;opacity:.85}
+
+@media(max-width:520px){
+  .marks{gap:12px}
+  .mark-badge{--d:96px}
+}

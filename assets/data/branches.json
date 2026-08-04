@@ -155,20 +155,5 @@
   "lat": 24.4391522239162,
   "lng": 54.5741605764523,
   "map": "https://maps.app.goo.gl/usMBohkVv8i9Y6dz6"
- },
- {
-  "city": "Dubai",
-  "cityAr": "دبي",
-  "name": "Burjuman",
-  "nameAr": "برجمان",
-  "type": "mall",
-  "addr": "Burjuman Mall",
-  "addrAr": "برجمان مول",
-  "tel": "600 545 554",
-  "lat": null,
-  "lng": null,
-  "map": "#",
-  "soon": true,
-  "todo": "Opening soon per Menu V4 cover. Confirm opening date, unit and phone with Almed"
  }
 ]
