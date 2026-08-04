@@ -107,6 +107,7 @@ async function initBranches(){
           <a href="${ORDER_URL}" target="_blank" rel="noopener" class="loc-act pri"><span class="en">Order</span><span class="ar">اطلب</span></a>
           <a href="tel:${b.tel.replace(/\s/g,'')}" class="loc-act">${b.tel}</a>
           <a href="${b.map}" target="_blank" rel="noopener" class="loc-act"><span class="en">Directions</span><span class="ar">الاتجاهات</span></a>
+          <a href="locations/${b.name.toLowerCase().replace(/ /g,'-')}.html" class="loc-act"><span class="en">Branch page</span><span class="ar">صفحة الفرع</span></a>
         </div>
       </div>`).join('');
     const count = document.getElementById('locCount');

@@ -1,0 +1,90 @@
+{
+ "@context": "https://schema.org",
+ "@type": "Organization",
+ "@id": "https://jjchicken.com/#organization",
+ "name": "JJ Chicken",
+ "alternateName": "JJ",
+ "legalName": "JJ Chicken LLC",
+ "url": "https://jjchicken.com",
+ "logo": "https://jjchicken.com/assets/img/logo.png",
+ "description": "JJ Chicken is the first fast-casual restaurant to bring authentic charcoal-grilled chicken to the UAE. Grade A, hormone free, grain fed and halal, marinated daily and grilled to order.",
+ "foundingDate": "2010",
+ "email": "info@jjchicken.com",
+ "telephone": "+971600545554",
+ "areaServed": [
+  {
+   "@type": "Country",
+   "name": "United Arab Emirates"
+  }
+ ],
+ "parentOrganization": {
+  "@type": "Organization",
+  "name": "Almed Retail"
+ },
+ "sameAs": [
+  "https://www.instagram.com/jjchicken/",
+  "https://www.facebook.com/jjchicken/"
+ ],
+ "subOrganization": [
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/al-barsha-1/#restaurant",
+   "name": "JJ Chicken — Al Barsha 1"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/world-trade-center/#restaurant",
+   "name": "JJ Chicken — World Trade Center"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/motor-city/#restaurant",
+   "name": "JJ Chicken — Motor City"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/kite-beach/#restaurant",
+   "name": "JJ Chicken — Kite Beach"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/discovery-gardens/#restaurant",
+   "name": "JJ Chicken — Discovery Gardens"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/silicon-central/#restaurant",
+   "name": "JJ Chicken — Silicon Central"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/city-centre-mirdif/#restaurant",
+   "name": "JJ Chicken — City Centre Mirdif"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/dubai-mall/#restaurant",
+   "name": "JJ Chicken — Dubai Mall"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/dubai-festival-city/#restaurant",
+   "name": "JJ Chicken — Dubai Festival City"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/corniche/#restaurant",
+   "name": "JJ Chicken — Corniche"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/reem-mall/#restaurant",
+   "name": "JJ Chicken — Reem Mall"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/al-raha/#restaurant",
+   "name": "JJ Chicken — Al Raha"
+  }
+ ]
+}

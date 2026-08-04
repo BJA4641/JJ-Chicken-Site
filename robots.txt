@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Ordering runs on ChatFood at order.jjchicken.com — it has its own robots policy.
+Sitemap: https://jjchicken.com/sitemap.xml
