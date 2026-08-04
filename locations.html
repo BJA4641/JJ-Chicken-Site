@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Locations — JJ Chicken</title>
+<meta name="description" content="Twelve JJ Chicken branches across Dubai and Abu Dhabi. Find your nearest, call it directly or get directions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Figtree:wght@400;500;600;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body dir="ltr">
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <a href="index.html" class="mark"><span class="mark-glyph"><span>JJ</span></span><span class="mark-name">JJ CHICKEN</span></a>
+  <div class="topbar-right">
+    <button class="lang" id="langBtn">عربي</button>
+    <button class="burger" id="burger" aria-label="Menu"><i></i><i></i><i></i></button>
+  </div>
+</header>
+
+<!-- DRAWER -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer">
+  <button class="drawer-close" id="drawerClose" aria-label="Close">×</button>
+  <nav class="drawer-nav">
+    <a href="index.html" ><span><span class="en">Home</span><span class="ar">الرئيسية</span></span><em>01</em></a>
+    <a href="menu.html"><span><span class="en">Menu</span><span class="ar">القائمة</span></span><em>02</em></a>
+    <a href="locations.html" aria-current="page"><span><span class="en">Locations</span><span class="ar">الفروع</span></span><em>03</em></a>
+    <a href="franchise.html"><span><span class="en">Franchise</span><span class="ar">الامتياز</span></span><em>04</em></a>
+    <a href="#"><span><span class="en">Careers</span><span class="ar">الوظائف</span></span><em>05</em></a>
+    <a href="#"><span><span class="en">Contact</span><span class="ar">اتصل بنا</span></span><em>06</em></a>
+  </nav>
+  <a href="https://order.jjchicken.com" target="_blank" rel="noopener" class="drawer-cta"><span class="en">Order now</span><span class="ar">اطلب الآن</span></a>
+  <a href="tel:600545554" class="drawer-tel">600 545 554</a>
+  <div class="drawer-foot">
+    <span class="en">JJ Chicken LLC · An Almed Retail brand<br>@jjchicken</span>
+    <span class="ar">جي جي تشيكن ذ.م.م · إحدى علامات ألمد ريتيل<br>@jjchicken</span>
+  </div>
+</aside>
+
+<!-- FLOATING ACTIONS -->
+<div class="floats">
+  <a href="#" class="float float-chat" id="chatBtn">
+    <svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.9 8.9 0 0 1-3.8-.8L3 21l1.9-4.9A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg>
+    <span><span class="en">Chat with us</span><span class="ar">تحدّث معنا</span></span>
+  </a>
+  <a href="https://order.jjchicken.com" target="_blank" rel="noopener" class="float float-order">
+    <svg viewBox="0 0 24 24"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
+    <span><span class="en">Order now</span><span class="ar">اطلب الآن</span></span>
+  </a>
+</div>
+
+
+<section class="pagehead grain">
+  <div class="ember ember-1"></div>
+  <div style="position:relative;z-index:2">
+    <div class="eyebrow"><span class="en">Find us</span><span class="ar">أين تجدنا</span></div>
+    <h1 class="display sec-title"><span class="en">Twelve across the UAE</span><span class="ar">اثنا عشر فرعاً في الإمارات</span></h1>
+    <p class="sec-sub" style="max-width:62ch"><span class="en">Street shops, mall food courts and fast-casual units across Dubai and Abu Dhabi — plus the food truck.</span><span class="ar">محلات في الشارع، وأركان طعام في المولات، ووحدات كاجوال سريعة في دبي وأبوظبي — إضافة إلى عربة الطعام.</span></p>
+  </div>
+</section>
+
+<div class="marquee"><div class="marquee-track" id="mq"></div></div>
+
+<section class="sec">
+  <div class="filters" id="locFilters">
+    <button class="chip on" data-city="all"><span class="en">All areas</span><span class="ar">كل المناطق</span></button>
+    <button class="chip" data-city="Dubai"><span class="en">Dubai</span><span class="ar">دبي</span></button>
+    <button class="chip" data-city="Abu Dhabi"><span class="en">Abu Dhabi</span><span class="ar">أبوظبي</span></button>
+  </div>
+  <div class="loc-count" id="locCount"></div>
+  <div class="loc-grid" id="locGrid"></div>
+</section>
+
+<footer>
+  <div class="foot-top">
+    <div>
+      <div class="mark" style="margin-bottom:18px"><span class="mark-glyph"><span>JJ</span></span><span class="mark-name">JJ CHICKEN</span></div>
+      <div class="foot-tel-l"><span class="en">Call centre</span><span class="ar">مركز الاتصال</span></div>
+      <a href="tel:600545554" class="foot-tel">600 545 554</a>
+    </div>
+    <nav class="foot-links">
+      <a href="menu.html"><span class="en">Menu</span><span class="ar">القائمة</span></a>
+      <a href="locations.html"><span class="en">Locations</span><span class="ar">الفروع</span></a>
+      <a href="franchise.html"><span class="en">Franchise</span><span class="ar">الامتياز</span></a>
+      <a href="https://order.jjchicken.com" target="_blank" rel="noopener"><span class="en">Order online</span><span class="ar">اطلب أونلاين</span></a>
+      <a href="#"><span class="en">Careers</span><span class="ar">الوظائف</span></a>
+      <a href="#"><span class="en">Contact</span><span class="ar">اتصل بنا</span></a>
+    </nav>
+  </div>
+  <p class="foot-note">
+    <span class="en">Concept build for the Almed Retail Website Rebuild Programme. Type shown in Oswald and Figtree as stand-ins for DIN Condensed Bold and Aftika, swapped in once licensed webfonts are supplied. Prices are not published on this site — they live on order.jjchicken.com so they are never out of date here.</span>
+    <span class="ar">نسخة تجريبية لبرنامج إعادة بناء مواقع ألمد ريتيل. الخطوط المعروضة Oswald وFigtree كبديل مؤقت عن DIN Condensed Bold وAftika، وتُستبدل فور توفير الخطوط المرخّصة. الأسعار غير منشورة على هذا الموقع — فهي على order.jjchicken.com حتى لا تصبح قديمة هنا.</span>
+  </p>
+</footer>
+
+<script src="assets/js/site.js"></script>
+</body>
+</html>
