@@ -163,3 +163,85 @@ site. **Not** total keyword count, and not rankings for terms nobody buys from.
 
 Anyone promising #1 for "healthy food in UAE" inside six months is either
 misunderstanding the SERP or telling you what you want to hear.
+
+---
+
+## 7. Beating the competition — what's real
+
+You named six: Nando's, Malak Al Tawouk, KFC, Texas Chicken, Al Laffah and Albaik.
+They fall into three groups, and each needs a different play.
+
+### Group A — beatable head-to-head: **Malak Al Tawouk, Al Laffah**
+Levantine chicken, same category, similar scale, comparable domain authority.
+JJ can genuinely outrank these on non-brand terms.
+
+Target: `tawouk near me` · `charcoal tawouk dubai` · `shawarma platter dubai` ·
+`lebanese grilled chicken dubai` · `طاووق دبي` · `فروج مشوي دبي` · `شاورما دبي`
+
+JJ's edge: **charcoal.** Malak Al Tawouk and Al Laffah grill, but charcoal is JJ's
+whole identity and it is a distinct search term with real volume. Own
+"charcoal grilled" completely and you take a slice of every tawouk search too.
+The homepage rail is already renamed *Charcoal Grilled Tawouk* for exactly this.
+
+### Group B — cannot beat on brand, can beat on category: **KFC, Texas Chicken, Albaik**
+You will never rank for "KFC" or "Albaik". Google gives brand queries to the brand,
+always, and it should — someone typing "KFC" wants KFC. Any agency promising this
+is selling you something that does not exist.
+
+What *is* winnable is the doubt that sits next to those brands:
+
+| Query | Why JJ wins it |
+|---|---|
+| `healthy alternative to fried chicken dubai` | JJ is grilled, not fried. Direct answer. |
+| `grilled chicken instead of fried` | Category-defining for JJ. |
+| `is grilled chicken healthier than fried` | Informational, JJ has a factual claim — charcoal lowers fat and sodium versus frying. |
+| `hormone free chicken uae` | Almost nobody optimises for this. JJ has it on the badge. |
+| `broasted vs charcoal grilled` | Albaik/Texas are broasted. This comparison is uncontested. |
+
+Build these as **content pages, not landing pages** — a short honest piece on why
+charcoal differs from frying, what grain-fed and hormone-free actually mean, and
+what changes nutritionally. That ranks, it earns links, and it is defensible.
+
+**Never** name a competitor on the site to attack them. It is legally risky in the
+UAE, it reads as insecure, and Google does not reward it. Win the category term,
+not the brand term.
+
+### Group C — the aspirational one: **Nando's**
+Nando's owns "peri peri" globally and has enormous brand equity. Do not attack it
+frontally. But note what they proved: **flame-grilled chicken can be a premium
+fast-casual category, not a QSR discount play.** JJ has the same structural story
+and a fifteen-year head start in the UAE on charcoal specifically.
+
+Realistic target: `flame grilled chicken dubai` · `grilled chicken restaurant dubai` ·
+`peri peri alternative dubai`. Winnable within 6–9 months with dish pages and
+consistent local SEO.
+
+### The play that actually beats all six
+**The local pack.** Nando's, KFC and Albaik outrank JJ nationally, but ranking is
+decided *per catchment*. In Mirdif, Motor City, Kite Beach, Reem Island and Al Raha,
+the question is not "who is bigger" but "who has the better-optimised profile within
+2km". That is winnable in weeks, not months, and it is where the order actually
+gets placed.
+
+Twelve well-run Google Business Profiles will take share from all six competitors
+faster than any amount of on-page work.
+
+### Priority keyword set — build in this order
+
+**Tier 1, weeks 1–8 (fastest return)**
+`charcoal grilled chicken dubai` · `charcoal chicken near me` · `jj chicken [each of 12 areas]` ·
+`grilled chicken [area]` · `دجاج مشوي على الفحم دبي` · `فروج مشوي أبوظبي`
+
+**Tier 2, months 2–4 (dish pages)**
+`chicken breast platter` · `tawouk platter dubai` · `mixed grill platter dubai` ·
+`shawarma rolls dubai` · `chicken bowl dubai` · `grilled chicken wings dubai`
+
+**Tier 3, months 3–6 (comparison content)**
+`healthy alternative to fried chicken` · `grilled vs fried chicken` ·
+`hormone free chicken uae` · `halal grilled chicken dubai` · `high protein meal dubai`
+
+**Tier 4, ongoing (category head terms)**
+`grilled chicken restaurant dubai` · `flame grilled chicken uae` · `lebanese chicken dubai`
+
+Deliberately excluded: `chicken`, `healthy food`, `good food in UAE`, and any
+competitor brand name. See section 1.

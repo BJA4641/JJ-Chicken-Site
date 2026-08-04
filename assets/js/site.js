@@ -176,7 +176,54 @@ async function initMenu(){
   });
 }
 
+/* ---------- branch map — every branch, not one ---------- */
+let _map = null;
+
+async function initMap(){
+  const el = document.getElementById('map');
+  if(!el || typeof L === 'undefined') return;
+
+  // a hidden container has no dimensions, so Leaflet renders blank.
+  // wait until it is actually on screen, then size it.
+  if(el.offsetParent === null || el.clientHeight === 0){
+    if(_map) return;
+    return void setTimeout(initMap, 150);
+  }
+
+  if(_map){ _map.invalidateSize(); return; }
+
+  const branches = (typeof BRANCHES !== 'undefined')
+    ? BRANCHES
+    : await fetch('assets/data/branches.json').then(r => r.json());
+  const pinned = branches.filter(b => b.lat && b.lng);
+  if(!pinned.length) return;
+
+  _map = L.map(el, {scrollWheelZoom:false}).setView([25.05, 55.2], 8);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution:'&copy; OpenStreetMap &copy; CARTO', maxZoom:19
+  }).addTo(_map);
+
+  const icon = L.divIcon({
+    className:'jj-pin', iconSize:[32,32], iconAnchor:[16,16], popupAnchor:[0,-15],
+    html:'<span>JJ</span>'
+  });
+
+  const pts = [];
+  pinned.forEach(b => {
+    L.marker([b.lat, b.lng], {icon, title:`JJ Chicken — ${b.name}`})
+     .addTo(_map)
+     .bindPopup(
+       `<strong>${b.name}</strong><span>${b.addr}</span>` +
+       `<a href="${b.map}" target="_blank" rel="noopener">Directions</a>` +
+       `<a href="tel:${b.tel.replace(/\s/g,'')}">${b.tel}</a>`);
+    pts.push([b.lat, b.lng]);
+  });
+  _map.fitBounds(pts, {padding:[44,44]});
+  setTimeout(() => _map.invalidateSize(), 120);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  initMap();
   initMarquee();
   initLang();
   initDrawer();
