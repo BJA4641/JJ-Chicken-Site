@@ -53,6 +53,14 @@
 
 ## Decisions this session
 
+- Repo restructured for a public, client-facing GitHub: all tooling references
+  removed, context file renamed to `AGENTS.md`.
+- Added `docs/GIT-WORKFLOW.md` and `docs/AGENT-PROMPT.md` — branch naming, PR
+  template, delete policy, file organisation rules.
+- Homepage rail set to the seven specialty platters, descriptions removed
+  pending photography. Sauces moved to the menu page.
+- Branch map rebuilt: all twelve pinned, no API key, dark tiles.
+
 - Prices removed from the entire site. They live on ChatFood only.
 - Native ordering module dropped — Almed is outsourcing order management.
   Every CTA is now an outbound link to `order.jjchicken.com`.

@@ -40,6 +40,7 @@ docs/ROADMAP.md     What comes next
 docs/SOURCES.md     Where every fact came from
 docs/SEO.md         Search strategy, competitor targeting, keyword tiers
 docs/GIT-WORKFLOW.md  Auth for private repos, daily loop, merge/conflict handling
+docs/AGENT-PROMPT.md  Session kickoff prompt, PR conventions, file organisation
 ```
 
 ## Editing content
