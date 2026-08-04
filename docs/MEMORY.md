@@ -1,8 +1,8 @@
 # MEMORY
 
 Durable context. Decisions here are settled — do not re-open them without an
-explicit instruction. This file exists so a fresh Claude Code session behaves like
-one that has been here all along.
+explicit instruction. This file exists so a fresh session picks up exactly where the last one
+stopped, with the same assumptions.
 
 ---
 

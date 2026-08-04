@@ -1,0 +1,2192 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JJ Chicken — preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Figtree:wght@400;500;600;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<style>
+/* JJ CHICKEN — shared stylesheet
+   Palette + type locked to JJ CHICKEN BRAND BOOK (2024).
+   Primary 80%: black / yellow / white.  Secondary 20%: red / purple / navy.
+   Weighting per brand book colour map: 50 / 25 / 19 / 2 / 2 / 2 */
+
+:root{
+  --black:#000000;
+  --yellow:#FAD22C;   /* Pantone 123 C */
+  --white:#FFFFFF;
+  --red:#EB214A;      /* Pantone 192 C */
+  --purple:#A04E9D;
+  --navy:#38568E;
+  --ash:#141414;
+  --smoke:#1c1c1c;
+  --display:'Oswald','DIN Condensed',Impact,sans-serif;   /* stand-in for DIN Condensed Bold */
+  --body:'Figtree','Aftika',-apple-system,BlinkMacSystemFont,sans-serif; /* stand-in for Aftika */
+  --arabic:'IBM Plex Sans Arabic',sans-serif;
+  --pad:clamp(20px,5vw,64px);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--black);color:var(--white);font-family:var(--body);line-height:1.5;overflow-x:hidden}
+body[dir="rtl"]{font-family:var(--arabic)}
+body[dir="rtl"] .display{font-family:var(--arabic);font-weight:700;letter-spacing:0}
+.display{font-family:var(--display);text-transform:uppercase;font-weight:700;letter-spacing:.01em;line-height:.92}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+.ar{display:none}
+body[dir="rtl"] .ar{display:inline}
+body[dir="rtl"] .en{display:none}
+body.locked{overflow:hidden}
+
+/* charcoal grain — brand book notes display type is "usually found with a texture" */
+.grain::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.16;
+  background-image:radial-gradient(circle at 20% 30%,rgba(255,255,255,.5) .5px,transparent .6px),
+  radial-gradient(circle at 70% 60%,rgba(255,255,255,.35) .5px,transparent .6px),
+  radial-gradient(circle at 45% 85%,rgba(255,255,255,.4) .5px,transparent .6px);
+  background-size:7px 7px,11px 11px,13px 13px;mix-blend-mode:overlay}
+
+/* ---------- TOP BAR ---------- */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;
+  justify-content:space-between;padding:14px var(--pad);background:rgba(0,0,0,.82);
+  backdrop-filter:blur(14px);border-bottom:1px solid rgba(250,210,44,.16)}
+.mark{display:flex;align-items:center;gap:10px}
+.mark-glyph{width:34px;height:34px;background:var(--yellow);border-radius:7px;display:grid;place-items:center;flex-shrink:0}
+.mark-glyph span{font-family:var(--display);color:var(--black);font-size:19px;font-weight:700;letter-spacing:-.04em;line-height:1}
+.mark-name{font-family:var(--display);font-size:18px;letter-spacing:.04em}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.lang{border:1px solid rgba(255,255,255,.28);border-radius:100px;padding:7px 14px;font-size:12px;font-weight:600;letter-spacing:.05em;transition:.2s}
+.lang:hover{background:var(--white);color:var(--black);border-color:var(--white)}
+.burger{width:38px;height:38px;border:1px solid rgba(255,255,255,.28);border-radius:10px;display:grid;place-items:center;gap:4px;padding:10px 9px;transition:.2s}
+.burger:hover{border-color:var(--yellow)}
+.burger i{display:block;width:100%;height:2px;background:var(--white);border-radius:2px;transition:.25s}
+.burger.open i:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.burger.open i:nth-child(2){opacity:0}
+.burger.open i:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+/* ---------- SIDEBAR DRAWER ---------- */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(3px);z-index:80;opacity:0;pointer-events:none;transition:.28s}
+.scrim.show{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;inset-inline-end:0;height:100dvh;width:min(340px,86vw);z-index:90;
+  background:var(--ash);border-inline-start:1px solid rgba(250,210,44,.2);
+  transform:translateX(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;padding:22px var(--pad) 28px;overflow-y:auto}
+body[dir="rtl"] .drawer{transform:translateX(-100%)}
+.drawer.show{transform:translateX(0)}
+.drawer-close{align-self:flex-end;font-size:26px;line-height:1;padding:6px 10px;color:rgba(255,255,255,.6);transition:.2s}
+.drawer-close:hover{color:var(--yellow)}
+.drawer-nav{display:flex;flex-direction:column;gap:2px;margin:22px 0 30px}
+.drawer-nav a{font-family:var(--display);font-size:30px;text-transform:uppercase;padding:11px 0;
+  border-bottom:1px solid rgba(255,255,255,.08);transition:.2s;display:flex;align-items:center;justify-content:space-between}
+body[dir="rtl"] .drawer-nav a{font-family:var(--arabic);font-size:24px}
+.drawer-nav a:hover,.drawer-nav a[aria-current="page"]{color:var(--yellow);padding-inline-start:8px}
+.drawer-nav a em{font-style:normal;font-family:var(--body);font-size:10px;letter-spacing:.16em;opacity:.35;font-weight:700}
+.drawer-cta{background:var(--yellow);color:var(--black);text-align:center;padding:15px;border-radius:100px;font-weight:800;font-size:15px;margin-bottom:12px}
+.drawer-tel{border:1px solid rgba(255,255,255,.24);text-align:center;padding:14px;border-radius:100px;font-weight:700;font-size:14px}
+.drawer-foot{margin-top:auto;padding-top:26px;font-size:11.5px;color:rgba(255,255,255,.34);line-height:1.7}
+
+/* ---------- FLOATING ACTIONS ---------- */
+.floats{position:fixed;inset-inline-end:16px;bottom:16px;z-index:70;display:flex;flex-direction:column;gap:10px;align-items:flex-end}
+.float{display:flex;align-items:center;gap:10px;border-radius:100px;padding:13px 20px;font-weight:800;font-size:14px;
+  box-shadow:0 8px 28px rgba(0,0,0,.5);transition:.2s;white-space:nowrap}
+.float:hover{transform:translateY(-2px)}
+.float svg{width:19px;height:19px;fill:none;stroke-width:2;flex-shrink:0}
+.float-order{background:var(--yellow);color:var(--black)}
+.float-order svg{stroke:var(--black)}
+.float-chat{background:var(--white);color:var(--black)}
+.float-chat svg{stroke:var(--black)}
+@media(max-width:520px){
+  .floats{inset-inline-end:12px;bottom:12px}
+  .float-chat span{display:none}
+  .float-chat{padding:13px;border-radius:50%}
+  body[dir="rtl"] .float-chat span{display:none}
+}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding:120px var(--pad) 0;overflow:hidden}
+.ember{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;animation:breathe 7s ease-in-out infinite}
+.ember-1{width:60vw;height:60vw;max-width:620px;max-height:620px;background:rgba(250,210,44,.30);top:8%;left:-14%}
+.ember-2{width:44vw;height:44vw;max-width:440px;max-height:440px;background:rgba(235,33,74,.24);bottom:14%;right:-10%;animation-delay:2.5s}
+@keyframes breathe{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:.9;transform:scale(1.1)}}
+.hero-inner{position:relative;z-index:2;padding-bottom:66px}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--yellow);margin-bottom:22px;display:flex;align-items:center;gap:11px}
+.eyebrow::before{content:"";width:32px;height:2px;background:var(--yellow)}
+.hero-ar{font-family:var(--arabic);font-size:clamp(30px,7vw,52px);font-weight:600;color:rgba(255,255,255,.34);margin-bottom:6px;line-height:1}
+.hero-h1{font-size:clamp(56px,15vw,168px);margin-bottom:26px}
+.hero-h1 em{font-style:normal;color:var(--yellow);display:block}
+.hero-lede{font-size:clamp(16px,2.2vw,20px);max-width:44ch;color:rgba(255,255,255,.74);line-height:1.6;margin-bottom:34px}
+.hero-lede b{color:var(--white);font-weight:600}
+.btn-solid{background:var(--yellow);color:var(--black);padding:16px 30px;border-radius:100px;font-weight:800;font-size:15px;transition:.2s;display:inline-block}
+.btn-solid:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(250,210,44,.36)}
+.btn-ghost{border:1.5px solid rgba(255,255,255,.34);padding:16px 30px;border-radius:100px;font-weight:700;font-size:15px;transition:.2s;display:inline-block}
+.btn-ghost:hover{border-color:var(--white);background:rgba(255,255,255,.08)}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap}
+
+/* ---------- MARQUEE (brand book asset) ---------- */
+.marquee{background:var(--yellow);color:var(--black);padding:13px 0;overflow:hidden;border-top:3px solid var(--black);border-bottom:3px solid var(--black)}
+.marquee-track{display:flex;width:max-content;animation:slide 34s linear infinite}
+body[dir="rtl"] .marquee-track{animation-direction:reverse}
+@keyframes slide{to{transform:translateX(-50%)}}
+.marquee-track span{font-family:var(--display);font-size:clamp(15px,2.4vw,22px);letter-spacing:.09em;padding:0 18px;white-space:nowrap}
+.marquee-track i{font-style:normal;opacity:.34;font-size:.72em;vertical-align:middle}
+
+/* ---------- SECTIONS ---------- */
+.sec{padding:clamp(64px,10vw,120px) var(--pad);position:relative}
+.sec-head{margin-bottom:44px;max-width:62ch}
+.sec-label{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--yellow);margin-bottom:16px}
+.sec-title{font-size:clamp(34px,6.5vw,76px);margin-bottom:18px}
+.sec-sub{font-size:clamp(15px,1.9vw,18px);color:rgba(255,255,255,.66);line-height:1.65}
+.pagehead{padding:calc(76px + clamp(48px,8vw,96px)) var(--pad) clamp(34px,6vw,56px);position:relative;overflow:hidden}
+
+/* ---------- SIGNATURE RAIL ---------- */
+.rail{display:flex;gap:14px;overflow-x:auto;padding-bottom:14px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.sig-card{flex:0 0 min(300px,78vw);scroll-snap-align:start;background:var(--ash);border:1px solid rgba(255,255,255,.09);
+  border-radius:20px;padding:26px;position:relative;overflow:hidden;transition:.25s;display:flex;flex-direction:column}
+.sig-card:hover{border-color:rgba(250,210,44,.5);transform:translateY(-3px)}
+.sig-card::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:.25s;
+  background:radial-gradient(circle at 86% 8%,rgba(250,210,44,.15),transparent 60%)}
+.sig-card:hover::after{opacity:1}
+.badge{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;padding:4px 9px;border-radius:4px;margin-bottom:14px;align-self:flex-start}
+.badge.sig{background:var(--yellow);color:var(--black)}
+.badge.best{background:var(--red);color:var(--white)}
+.sig-name{font-family:var(--display);font-size:27px;margin-bottom:4px;position:relative;z-index:1;line-height:1}
+body[dir="rtl"] .sig-name{font-family:var(--arabic);font-size:23px}
+.sig-name-ar{font-family:var(--arabic);font-size:16px;color:var(--yellow);margin-bottom:13px;font-weight:500}
+body[dir="rtl"] .sig-name-ar{display:none}
+.sig-desc{font-size:13.5px;color:rgba(255,255,255,.58);line-height:1.62;position:relative;z-index:1;flex:1}
+.mars{display:flex;gap:7px;margin-top:18px;padding-top:16px;border-top:1px solid rgba(255,255,255,.09);position:relative;z-index:1;flex-wrap:wrap}
+.mar{font-size:11px;font-weight:600;padding:5px 11px;border-radius:100px;border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.62)}
+
+/* ---------- USP ---------- */
+.usp{background:var(--smoke)}
+.usp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(228px,1fr));gap:26px}
+.usp-item h4{font-family:var(--display);font-size:22px;margin-bottom:10px;color:var(--yellow)}
+body[dir="rtl"] .usp-item h4{font-family:var(--arabic);font-size:19px}
+.usp-item p{font-size:14px;color:rgba(255,255,255,.6);line-height:1.65}
+
+/* ---------- EXPLORE CARDS (second-layer entry points) ---------- */
+.explore{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.ex-card{background:var(--ash);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:30px;
+  transition:.25s;display:flex;flex-direction:column;min-height:200px;position:relative;overflow:hidden}
+.ex-card:hover{border-color:var(--yellow);transform:translateY(-3px)}
+.ex-n{font-size:10px;font-weight:800;letter-spacing:.2em;color:rgba(255,255,255,.3);margin-bottom:16px}
+.ex-card h3{font-family:var(--display);font-size:34px;margin-bottom:10px;line-height:1}
+body[dir="rtl"] .ex-card h3{font-family:var(--arabic);font-size:28px}
+.ex-card p{font-size:13.5px;color:rgba(255,255,255,.55);line-height:1.6;flex:1}
+.ex-go{margin-top:20px;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--yellow);display:flex;align-items:center;gap:8px}
+.ex-go::after{content:"→";transition:.2s}
+body[dir="rtl"] .ex-go::after{content:"←"}
+.ex-card:hover .ex-go::after{transform:translateX(4px)}
+body[dir="rtl"] .ex-card:hover .ex-go::after{transform:translateX(-4px)}
+
+/* ---------- MENU PAGE ---------- */
+.filters{display:flex;gap:9px;overflow-x:auto;padding-bottom:20px;margin-bottom:22px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.chip{border:1.5px solid rgba(255,255,255,.22);border-radius:100px;padding:9px 18px;font-size:13px;font-weight:600;white-space:nowrap;transition:.2s;flex-shrink:0}
+.chip:hover{border-color:rgba(255,255,255,.5)}
+.chip.on{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
+.cat{margin-bottom:52px}
+.cat-title{font-family:var(--display);font-size:clamp(26px,4.5vw,44px);margin-bottom:6px;color:var(--yellow)}
+body[dir="rtl"] .cat-title{font-family:var(--arabic)}
+.cat-ar{font-family:var(--arabic);font-size:17px;color:rgba(255,255,255,.4);margin-bottom:22px}
+body[dir="rtl"] .cat-ar{display:none}
+.cat-blurb{font-size:14.5px;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:20px;max-width:56ch}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:14px}
+.item{background:var(--ash);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:20px;transition:.22s}
+.item:hover{border-color:rgba(250,210,44,.42)}
+.item-name{font-family:var(--display);font-size:21px;margin-bottom:3px;line-height:1.05}
+body[dir="rtl"] .item-name{font-family:var(--arabic);font-size:18px}
+.item-ar{font-family:var(--arabic);font-size:14.5px;color:var(--yellow);margin-bottom:9px}
+body[dir="rtl"] .item-ar{display:none}
+.item-desc{font-size:13px;color:rgba(255,255,255,.55);line-height:1.58}
+.item-tags{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.tag{font-size:9px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;padding:3px 8px;border-radius:3px}
+.tag.sig{background:var(--yellow);color:var(--black)}
+.tag.best{background:var(--red);color:var(--white)}
+.notice{border-inline-start:3px solid var(--yellow);background:rgba(250,210,44,.07);padding:18px 20px;
+  border-radius:0 12px 12px 0;font-size:13.5px;color:rgba(255,255,255,.7);line-height:1.65;margin-bottom:34px}
+body[dir="rtl"] .notice{border-radius:12px 0 0 12px}
+
+/* ---------- LOCATIONS PAGE ---------- */
+.loc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(262px,1fr));gap:12px}
+.loc{background:var(--ash);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:20px;transition:.22s;display:flex;flex-direction:column}
+.loc:hover{border-color:var(--yellow)}
+.loc-city{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--yellow);margin-bottom:7px}
+.loc-name{font-family:var(--display);font-size:21px;margin-bottom:9px}
+body[dir="rtl"] .loc-name{font-family:var(--arabic);font-size:18px}
+.loc-addr{font-size:12.5px;color:rgba(255,255,255,.5);line-height:1.55;margin-bottom:14px;flex:1}
+.loc-acts{display:flex;gap:8px;flex-wrap:wrap}
+.loc-act{font-size:11.5px;font-weight:700;padding:7px 13px;border-radius:100px;border:1px solid rgba(255,255,255,.2);transition:.2s;white-space:nowrap}
+.loc-act:hover{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
+.loc-act.pri{background:rgba(250,210,44,.14);border-color:rgba(250,210,44,.42);color:var(--yellow)}
+.loc.soon{opacity:.62;border-style:dashed}
+.loc.soon:hover{border-color:var(--purple)}
+.soon-tag{border-color:rgba(160,78,157,.6);color:var(--purple);background:rgba(160,78,157,.1)}
+.loc-count{font-size:13px;color:rgba(255,255,255,.42);margin-bottom:20px}
+
+/* ---------- FRANCHISE PAGE ---------- */
+.fr{background:var(--white);color:var(--black)}
+.fr .sec-label{color:var(--red)}
+.fr .sec-sub{color:rgba(0,0,0,.66)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:1px;background:rgba(0,0,0,.14);margin:44px 0;border:1px solid rgba(0,0,0,.14)}
+.stat{background:var(--white);padding:28px 22px}
+.stat-n{font-family:var(--display);font-size:clamp(40px,7vw,64px);line-height:1;margin-bottom:8px}
+.stat-l{font-size:12px;font-weight:600;color:rgba(0,0,0,.55);line-height:1.45}
+.models{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-bottom:44px}
+.model{border:1.5px solid rgba(0,0,0,.16);border-radius:16px;padding:24px;transition:.22s}
+.model:hover{border-color:var(--red);transform:translateY(-2px)}
+.model-n{font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin-bottom:11px}
+.model h4{font-family:var(--display);font-size:22px;margin-bottom:9px;line-height:1.05;text-transform:uppercase}
+body[dir="rtl"] .model h4{font-family:var(--arabic);font-size:19px}
+.model p{font-size:13.5px;color:rgba(0,0,0,.62);line-height:1.6}
+.offer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:28px;margin-bottom:44px}
+.offer h4{font-family:var(--display);font-size:20px;margin-bottom:10px;text-transform:uppercase}
+body[dir="rtl"] .offer h4{font-family:var(--arabic);font-size:18px}
+.offer ul{list-style:none;font-size:13.5px;color:rgba(0,0,0,.64);line-height:1.7}
+.offer li{padding-inline-start:16px;position:relative;margin-bottom:5px}
+.offer li::before{content:"";position:absolute;inset-inline-start:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--red)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:rgba(0,0,0,.14);border:1px solid rgba(0,0,0,.14);margin-bottom:44px}
+.step{background:var(--white);padding:24px 20px}
+.step-n{font-family:var(--display);font-size:34px;color:var(--red);line-height:1;margin-bottom:9px}
+.step p{font-size:13px;color:rgba(0,0,0,.66);line-height:1.55}
+.criteria{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:44px}
+.crit{font-size:12.5px;font-weight:600;padding:9px 16px;border-radius:100px;background:rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.1)}
+.fr-cta{background:var(--black);color:var(--white);padding:16px 32px;border-radius:100px;font-weight:800;font-size:15px;display:inline-block;transition:.2s}
+.fr-cta:hover{background:var(--red)}
+
+/* ---------- FOOTER ---------- */
+footer{padding:clamp(48px,7vw,80px) var(--pad) 96px;border-top:1px solid rgba(255,255,255,.11)}
+.foot-top{display:flex;justify-content:space-between;gap:34px;flex-wrap:wrap;margin-bottom:34px}
+.foot-links{display:flex;gap:30px;flex-wrap:wrap;font-size:13.5px}
+.foot-links a{color:rgba(255,255,255,.62);transition:.2s}
+.foot-links a:hover{color:var(--yellow)}
+.foot-tel{font-family:var(--display);font-size:26px;color:var(--yellow);direction:ltr;display:inline-block;margin-bottom:6px}
+.foot-tel-l{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:4px}
+.foot-note{font-size:11.5px;color:rgba(255,255,255,.32);line-height:1.7;max-width:82ch}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}}
+
+/* ---------- STATEMENT BAND ---------- */
+.statement{padding:clamp(56px,9vw,110px) var(--pad);border-bottom:1px solid rgba(255,255,255,.09)}
+.statement p{font-size:clamp(28px,5.6vw,68px);line-height:1;max-width:20ch}
+.statement em{font-style:normal;color:var(--yellow);display:block}
+body[dir="rtl"] .statement p{font-family:var(--arabic);line-height:1.25}
+
+/* ---------- QUALITY MARKS ----------
+   Rebuilt from Almed's supplied badge set: black disc, gold star,
+   condensed caps, gold rule, ruled dots. Scalable, so it stays crisp
+   and the wording is editable in marks.json rather than baked into art. */
+.marks-band{padding:clamp(60px,9vw,110px) var(--pad);background:var(--smoke);border-block:1px solid rgba(255,255,255,.08)}
+.marks-head{max-width:52ch;margin:0 auto clamp(38px,6vw,62px);text-align:center}
+.marks-title{font-size:clamp(28px,5vw,58px);line-height:1}
+.marks-title em{font-style:normal;color:var(--yellow);display:block}
+body[dir="rtl"] .marks-title{font-family:var(--arabic);line-height:1.25}
+.marks{display:flex;gap:clamp(14px,3vw,34px);flex-wrap:wrap;justify-content:center;align-items:flex-start}
+.mark-badge{
+  --d:clamp(112px,15vw,150px);
+  width:var(--d);height:var(--d);border-radius:50%;
+  background:var(--black);border:1px solid rgba(250,210,44,.55);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;padding:11px 10px;text-align:center;position:relative;
+  box-shadow:inset 0 0 0 4px var(--black),inset 0 0 0 5px rgba(250,210,44,.3),0 0 34px rgba(250,210,44,.09);
+  transition:.28s;
+}
+.mark-badge:hover{transform:translateY(-6px) scale(1.04);border-color:var(--yellow);box-shadow:inset 0 0 0 4px var(--black),inset 0 0 0 5px var(--yellow),0 0 46px rgba(250,210,44,.24)}
+.mb-star{color:var(--yellow);font-size:calc(var(--d) * .30);line-height:.85;margin-top:-2px;text-shadow:0 0 20px rgba(250,210,44,.65)}
+.mb-text{
+  font-family:var(--display);text-transform:uppercase;
+  font-size:calc(var(--d) * .108);line-height:1.18;letter-spacing:.06em;color:var(--white);
+}
+body[dir="rtl"] .mb-text{font-family:var(--arabic);font-size:calc(var(--d) * .095);letter-spacing:0}
+.mb-rule{display:block;width:52%;height:calc(var(--d) * .045);background:var(--yellow);border-radius:1px}
+.mb-dots{color:var(--yellow);font-size:calc(var(--d) * .1);letter-spacing:.12em;line-height:.6;opacity:.85}
+
+@media(max-width:520px){
+  .marks{gap:10px}
+  .mark-badge{--d:min(29vw,116px)}
+}
+
+/* ---------- SAUCE CLOUD ---------- */
+.sauce-cloud{display:flex;flex-wrap:wrap;gap:9px}
+.sauce{font-size:13px;font-weight:600;padding:9px 16px;border-radius:100px;
+  border:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.66);transition:.2s}
+.sauce:hover{border-color:var(--yellow);color:var(--yellow)}
+.sauce.hot{border-color:rgba(235,33,74,.5);color:var(--red)}
+
+/* ---------- FOOTER SOCIAL ---------- */
+.foot-social{display:flex;flex-direction:column;gap:7px;font-size:13.5px}
+.foot-social a{color:rgba(255,255,255,.62);transition:.2s}
+.foot-social a:hover{color:var(--yellow)}
+.drawer-social{display:flex;gap:18px;font-size:13px;margin-bottom:20px;padding-top:4px}
+.drawer-social a{color:rgba(255,255,255,.5);transition:.2s}
+.drawer-social a:hover{color:var(--yellow)}
+
+/* ---------- EMBEDDED MAP ---------- */
+.map-wrap{margin-top:34px;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.12);line-height:0}
+#map{width:100%;height:clamp(320px,52vh,540px);background:var(--ash);z-index:1}
+.jj-pin{background:var(--yellow);border-radius:50%;display:grid;place-items:center;
+  box-shadow:0 0 0 3px rgba(0,0,0,.9),0 0 18px rgba(250,210,44,.55);border:none}
+.jj-pin span{font-family:var(--display);font-size:12px;font-weight:700;color:var(--black);letter-spacing:-.03em;line-height:1}
+.leaflet-popup-content-wrapper{background:var(--ash);color:var(--white);border-radius:12px;border:1px solid rgba(250,210,44,.35)}
+.leaflet-popup-tip{background:var(--ash)}
+.leaflet-popup-content{margin:14px 16px;font-family:var(--body);font-size:13px;display:flex;flex-direction:column;gap:5px}
+.leaflet-popup-content strong{font-family:var(--display);font-size:18px;text-transform:uppercase;letter-spacing:.02em}
+.leaflet-popup-content span{color:rgba(255,255,255,.55);line-height:1.5}
+.leaflet-popup-content a{color:var(--yellow);font-weight:700;font-size:12px}
+.leaflet-container a.leaflet-popup-close-button{color:rgba(255,255,255,.5)}
+.leaflet-control-attribution{background:rgba(0,0,0,.6)!important;color:rgba(255,255,255,.4)!important}
+.leaflet-control-attribution a{color:rgba(255,255,255,.6)!important}
+
+.page[hidden]{display:none}
+</style>
+</head>
+<body dir="ltr">
+<!-- TOP BAR -->
+<header class="topbar">
+  <a href="#/index" class="mark"><span class="mark-glyph"><span>JJ</span></span><span class="mark-name">JJ CHICKEN</span></a>
+  <div class="topbar-right">
+    <button class="lang" id="langBtn">عربي</button>
+    <button class="burger" id="burger" aria-label="Menu"><i></i><i></i><i></i></button>
+  </div>
+</header>
+
+<!-- DRAWER -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer">
+  <button class="drawer-close" id="drawerClose" aria-label="Close">×</button>
+  <nav class="drawer-nav">
+    <a href="#/index" aria-current="page"><span><span class="en">Home</span><span class="ar">الرئيسية</span></span><em>01</em></a>
+    <a href="#/menu"><span><span class="en">Menu</span><span class="ar">القائمة</span></span><em>02</em></a>
+    <a href="#/locations"><span><span class="en">Locations</span><span class="ar">الفروع</span></span><em>03</em></a>
+    <a href="#/franchise"><span><span class="en">Franchise</span><span class="ar">الامتياز</span></span><em>04</em></a>
+    <a href="#"><span><span class="en">Careers</span><span class="ar">الوظائف</span></span><em>05</em></a>
+    <a href="#"><span><span class="en">Contact</span><span class="ar">اتصل بنا</span></span><em>06</em></a>
+  </nav>
+  <a href="https://order.jjchicken.com" target="_blank" rel="noopener" class="drawer-cta"><span class="en">Order now</span><span class="ar">اطلب الآن</span></a>
+  <a href="tel:600545554" class="drawer-tel">600 545 554</a>
+  <div class="drawer-social">
+    <a href="https://www.instagram.com/jjchicken/" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://www.facebook.com/jjchicken/" target="_blank" rel="noopener">Facebook</a>
+  </div>
+  <div class="drawer-foot">
+    <span class="en">JJ Chicken LLC · An Almed Retail brand<br>@jjchicken</span>
+    <span class="ar">جي جي تشيكن ذ.م.م · إحدى علامات ألمد ريتيل<br>@jjchicken</span>
+  </div>
+</aside>
+
+<!-- FLOATING ACTIONS -->
+<div class="floats">
+  <a href="#" class="float float-chat" id="chatBtn">
+    <svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.9 8.9 0 0 1-3.8-.8L3 21l1.9-4.9A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg>
+    <span><span class="en">Chat with us</span><span class="ar">تحدّث معنا</span></span>
+  </a>
+  <a href="https://order.jjchicken.com" target="_blank" rel="noopener" class="float float-order">
+    <svg viewBox="0 0 24 24"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
+    <span><span class="en">Order now</span><span class="ar">اطلب الآن</span></span>
+  </a>
+</div>
+
+
+<div class="page" id="page-index" hidden>
+
+<!-- HERO -->
+<section class="hero grain">
+  <div class="ember ember-1"></div><div class="ember ember-2"></div>
+  <div class="hero-inner">
+    <div class="eyebrow"><span class="en">Charcoal grilled · UAE since 2010</span><span class="ar">مشوي على الفحم · الإمارات منذ ٢٠١٠</span></div>
+    <div class="hero-ar">جاجة</div>
+    <h1 class="display hero-h1"><span class="en">JJ means<em>chicken.</em></span><span class="ar">جي جي تعني<em>دجاج</em></span></h1>
+    <p class="hero-lede">
+      <span class="en">Back in 2010 we fired up our first charcoal grill with one belief: that eating well and eating boldly shouldn't be a trade-off. <b>Hormone free, grain fed, marinated daily</b>, and cooked the way it was meant to be cooked.</span>
+      <span class="ar">في ٢٠١٠، أشعلنا أول جمرة بقناعة واحدة: إن الأكل الصحي والأكل اللذيذ مش لازم يكونوا خيارين مختلفين. <b>دجاج خالي من الهرمونات، يتتبّل يومياً</b>، ويتطبخ بالطريقة الصح.</span>
+    </p>
+    <div class="cta-row">
+      <a href="https://order.jjchicken.com" target="_blank" rel="noopener" class="btn-solid"><span class="en">Order now</span><span class="ar">اطلب الآن</span></a>
+      <a href="#/menu" class="btn-ghost"><span class="en">See the menu</span><span class="ar">شاهد القائمة</span></a>
+    </div>
+  </div>
+</section>
+
+<div class="marquee"><div class="marquee-track" id="mq"></div></div>
+
+
+<section class="statement">
+  <p class="display">
+    <span class="en">The grill is still burning.<em> And the flavor still speaks for itself.</em></span>
+    <span class="ar">الجمر لسّا وَلْعان.<em> والنكهة بتحكي عن نفسها.</em></span>
+  </p>
+</section>
+
+<section class="marks-band">
+  <div class="marks-head">
+    <div class="sec-label"><span class="en">Five stars, every plate</span><span class="ar">خمس نجوم في كل طبق</span></div>
+    <h2 class="display marks-title"><span class="en">Nothing here is a claim.<em> All five are standards.</em></span><span class="ar">لا شيء هنا مجرّد ادّعاء.<em> الخمسة كلها معايير.</em></span></h2>
+  </div>
+  <div class="marks" id="marks"></div>
+</section>
+
+<!-- SIGNATURE -->
+<section class="sec">
+  <div class="sec-head">
+    <div class="sec-label"><span class="en">Signature</span><span class="ar">أطباقنا المميّزة</span></div>
+    <h2 class="display sec-title"><span class="en">The specialty platters</span><span class="ar">الأطباق المميّزة</span></h2>
+    <p class="sec-sub"><span class="en">One main ingredient, done properly. These are the plates people come back for — the full menu sits one page away.</span><span class="ar">مكوّن رئيسي واحد، مُتقن. هذه هي الأطباق التي يعود إليها الناس — والقائمة الكاملة على بُعد صفحة واحدة.</span></p>
+  </div>
+
+  <div class="rail">
+    <article class="sig-card">
+      <span class="badge best"><span class="en">Best seller</span><span class="ar">الأكثر مبيعاً</span></span>
+      <h3 class="sig-name"><span class="en">Charcoal Grilled Chicken</span><span class="ar">فروج مشوي على الفحم</span></h3>
+      <div class="sig-name-ar">فروج مشوي على الفحم</div>
+      <div class="mars"><span class="mar"><span class="en">JJ Original</span><span class="ar">أوريجينال</span></span><span class="mar"><span class="en">Spicy</span><span class="ar">حار</span></span><span class="mar"><span class="en">Herbal</span><span class="ar">أعشاب</span></span></div>
+    </article>
+
+    <article class="sig-card">
+      <span class="badge sig"><span class="en">Signature</span><span class="ar">مميّز</span></span>
+      <h3 class="sig-name"><span class="en">Charcoal Grilled Tawouk</span><span class="ar">طاووق مشوي على الفحم</span></h3>
+      <div class="sig-name-ar">طاووق مشوي على الفحم</div>
+      
+    </article>
+
+    <article class="sig-card">
+      <span class="badge sig"><span class="en">Signature</span><span class="ar">مميّز</span></span>
+      <h3 class="sig-name"><span class="en">JJ Roasted Platter</span><span class="ar">طبق جي جي المشوي</span></h3>
+      <div class="sig-name-ar">طبق جي جي المشوي</div>
+      <div class="mars"><span class="mar"><span class="en">JJ Original</span><span class="ar">أوريجينال</span></span><span class="mar"><span class="en">Spicy</span><span class="ar">حار</span></span><span class="mar"><span class="en">Herbal</span><span class="ar">أعشاب</span></span></div>
+    </article>
+
+    <article class="sig-card">
+      
+      <h3 class="sig-name"><span class="en">JJ Breast Platter</span><span class="ar">طبق صدر جي جي</span></h3>
+      <div class="sig-name-ar">طبق صدر جي جي</div>
+      <div class="mars"><span class="mar"><span class="en">JJ Original</span><span class="ar">أوريجينال</span></span><span class="mar"><span class="en">Spicy</span><span class="ar">حار</span></span><span class="mar"><span class="en">Herbal</span><span class="ar">أعشاب</span></span></div>
+    </article>
+
+    <article class="sig-card">
+      <span class="badge best"><span class="en">Best seller</span><span class="ar">الأكثر مبيعاً</span></span>
+      <h3 class="sig-name"><span class="en">JJ W Batata</span><span class="ar">جي جي وبطاطا</span></h3>
+      <div class="sig-name-ar">جي جي وبطاطا</div>
+      
+    </article>
+
+    <article class="sig-card">
+      <span class="badge sig"><span class="en">Signature</span><span class="ar">مميّز</span></span>
+      <h3 class="sig-name"><span class="en">JJ W Rez</span><span class="ar">طبق جي جي ورز</span></h3>
+      <div class="sig-name-ar">طبق جي جي ورز</div>
+      
+    </article>
+
+    <article class="sig-card">
+      
+      <h3 class="sig-name"><span class="en">JJ Smoky Bowl</span><span class="ar">طبق جي جي سموكي</span></h3>
+      <div class="sig-name-ar">طبق جي جي سموكي</div>
+      
+    </article>
+  </div>
+</section>
+
+<!-- USP -->
+<section class="sec usp">
+  <div class="sec-head">
+    <div class="sec-label"><span class="en">Why charcoal</span><span class="ar">لماذا الفحم</span></div>
+    <h2 class="display sec-title"><span class="en">Where healthy meets tasty</span><span class="ar">حيث يلتقي الصحي باللذيذ</span></h2>
+  </div>
+  <div class="usp-grid">
+    <div class="usp-item">
+      <h4><span class="en">Originality</span><span class="ar">الأصالة</span></h4>
+      <p><span class="en">The first fast-casual restaurant to offer authentic charcoal-grilled chicken in the UAE. From whole grilled chicken to sandwiches, one recipe and one distinctive flavour.</span><span class="ar">أول مطعم كاجوال سريع يقدّم الدجاج المشوي على الفحم الأصيل في الإمارات. من الدجاج الكامل المشوي إلى الساندويتشات، وصفة واحدة ونكهة مميّزة واحدة.</span></p>
+    </div>
+    <div class="usp-item">
+      <h4><span class="en">Simplicity</span><span class="ar">البساطة</span></h4>
+      <p><span class="en">One main ingredient. Focusing on chicken keeps the kitchen simple, the specialty sharp, and the variety within the category wide.</span><span class="ar">مكوّن رئيسي واحد. التركيز على الدجاج يُبقي المطبخ بسيطاً، والتخصّص واضحاً، والتنوّع داخل الفئة واسعاً.</span></p>
+    </div>
+    <div class="usp-item">
+      <h4><span class="en">Healthy &amp; fresh</span><span class="ar">صحي وطازج</span></h4>
+      <p><span class="en">Grain fed, hormone free, Grade A and halal. Marinated daily, grilled on order, served without preservatives.</span><span class="ar">مغذّى بالحبوب، خالٍ من الهرمونات، درجة أولى وحلال. يُتبّل يومياً، ويُشوى عند الطلب، ويُقدّم دون مواد حافظة.</span></p>
+    </div>
+    <div class="usp-item">
+      <h4><span class="en">The fire itself</span><span class="ar">النار نفسها</span></h4>
+      <p><span class="en">Charcoal grilling keeps the meat smokey, tender and juicy, retains nutrients, and lowers both fat and sodium compared with frying.</span><span class="ar">الشوي على الفحم يُبقي اللحم مدخّناً وطرياً وغنياً بعصارته، ويحافظ على العناصر الغذائية، ويقلّل الدهون والصوديوم مقارنة بالقلي.</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- EXPLORE -->
+<section class="sec">
+  <div class="sec-head">
+    <div class="sec-label"><span class="en">Explore</span><span class="ar">استكشف</span></div>
+    <h2 class="display sec-title"><span class="en">Where next</span><span class="ar">إلى أين</span></h2>
+  </div>
+  <div class="explore">
+    <a href="#/menu" class="ex-card">
+      <div class="ex-n">01</div>
+      <h3><span class="en">Menu</span><span class="ar">القائمة</span></h3>
+      <p><span class="en">Grills, platters, sandwiches, shawarma, wings, salads and a kids' menu.</span><span class="ar">مشاوي، صحون، ساندويتشات، شاورما، أجنحة، سلطات وقائمة أطفال.</span></p>
+      <span class="ex-go"><span class="en">See the menu</span><span class="ar">شاهد القائمة</span></span>
+    </a>
+    <a href="#/locations" class="ex-card">
+      <div class="ex-n">02</div>
+      <h3><span class="en">Locations</span><span class="ar">الفروع</span></h3>
+      <p><span class="en">Twelve branches across Dubai and Abu Dhabi — street shops, mall food courts and fast-casual units.</span><span class="ar">اثنا عشر فرعاً في دبي وأبوظبي — محلات في الشارع، وأركان طعام في المولات، ووحدات كاجوال سريعة.</span></p>
+      <span class="ex-go"><span class="en">Find your branch</span><span class="ar">اعثر على فرعك</span></span>
+    </a>
+    <a href="#/franchise" class="ex-card">
+      <div class="ex-n">03</div>
+      <h3><span class="en">Franchise</span><span class="ar">الامتياز</span></h3>
+      <p><span class="en">A category we created, a proven model, and three ways to operate it across the GCC.</span><span class="ar">فئة أنشأناها، ونموذج مُثبت، وثلاث طرق لتشغيله في دول الخليج.</span></p>
+      <span class="ex-go"><span class="en">Partner with us</span><span class="ar">كن شريكاً</span></span>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-top">
+    <div>
+      <div class="mark" style="margin-bottom:18px"><span class="mark-glyph"><span>JJ</span></span><span class="mark-name">JJ CHICKEN</span></div>
+      <div class="foot-tel-l"><span class="en">Call centre</span><span class="ar">مركز الاتصال</span></div>
+      <a href="tel:600545554" class="foot-tel">600 545 554</a>
+    </div>
+    <nav class="foot-links">
+      <a href="#/menu"><span class="en">Menu</span><span class="ar">القائمة</span></a>
+      <a href="#/locations"><span class="en">Locations</span><span class="ar">الفروع</span></a>
+      <a href="#/franchise"><span class="en">Franchise</span><span class="ar">الامتياز</span></a>
+      <a href="https://order.jjchicken.com" target="_blank" rel="noopener"><span class="en">Order online</span><span class="ar">اطلب أونلاين</span></a>
+      <a href="#"><span class="en">Careers</span><span class="ar">الوظائف</span></a>
+      <a href="#"><span class="en">Contact</span><span class="ar">اتصل بنا</span></a>
+    </nav>
+    <div class="foot-social">
+      <div class="foot-tel-l"><span class="en">Follow</span><span class="ar">تابعنا</span></div>
+      <a href="https://www.instagram.com/jjchicken/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.facebook.com/jjchicken/" target="_blank" rel="noopener">Facebook</a>
+      <a href="mailto:info@jjchicken.com">info@jjchicken.com</a>
+    </div>
+  </div>
+  <p class="foot-note">
+    <span class="en">Concept build for the Almed Retail Website Rebuild Programme. Type shown in Oswald and Figtree as stand-ins for DIN Condensed Bold and Aftika, swapped in once licensed webfonts are supplied. Prices are not published on this site — they live on order.jjchicken.com so they are never out of date here.</span>
+    <span class="ar">نسخة تجريبية لبرنامج إعادة بناء مواقع ألمد ريتيل. الخطوط المعروضة Oswald وFigtree كبديل مؤقت عن DIN Condensed Bold وAftika، وتُستبدل فور توفير الخطوط المرخّصة. الأسعار غير منشورة على هذا الموقع — فهي على order.jjchicken.com حتى لا تصبح قديمة هنا.</span>
+  </p>
+</footer>
+
+<script type="application/ld+json">{
+ "@context": "https://schema.org",
+ "@type": "Organization",
+ "@id": "https://jjchicken.com/#organization",
+ "name": "JJ Chicken",
+ "alternateName": "JJ",
+ "legalName": "JJ Chicken LLC",
+ "url": "https://jjchicken.com",
+ "logo": "https://jjchicken.com/assets/img/logo.png",
+ "description": "JJ Chicken is the first fast-casual restaurant to bring authentic charcoal-grilled chicken to the UAE. Grade A, hormone free, grain fed and halal, marinated daily and grilled to order.",
+ "foundingDate": "2010",
+ "email": "info@jjchicken.com",
+ "telephone": "+971600545554",
+ "areaServed": [
+  {
+   "@type": "Country",
+   "name": "United Arab Emirates"
+  }
+ ],
+ "parentOrganization": {
+  "@type": "Organization",
+  "name": "Almed Retail"
+ },
+ "sameAs": [
+  "https://www.instagram.com/jjchicken/",
+  "https://www.facebook.com/jjchicken/"
+ ],
+ "subOrganization": [
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/al-barsha-1/#restaurant",
+   "name": "JJ Chicken — Al Barsha 1"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/world-trade-center/#restaurant",
+   "name": "JJ Chicken — World Trade Center"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/motor-city/#restaurant",
+   "name": "JJ Chicken — Motor City"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/kite-beach/#restaurant",
+   "name": "JJ Chicken — Kite Beach"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/discovery-gardens/#restaurant",
+   "name": "JJ Chicken — Discovery Gardens"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/silicon-central/#restaurant",
+   "name": "JJ Chicken — Silicon Central"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/city-centre-mirdif/#restaurant",
+   "name": "JJ Chicken — City Centre Mirdif"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/dubai-mall/#restaurant",
+   "name": "JJ Chicken — Dubai Mall"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/dubai-festival-city/#restaurant",
+   "name": "JJ Chicken — Dubai Festival City"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/corniche/#restaurant",
+   "name": "JJ Chicken — Corniche"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/reem-mall/#restaurant",
+   "name": "JJ Chicken — Reem Mall"
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://jjchicken.com/locations/al-raha/#restaurant",
+   "name": "JJ Chicken — Al Raha"
+  }
+ ]
+}</script>
+<script type="application/ld+json">{
+ "@context": "https://schema.org",
+ "@type": "WebSite",
+ "@id": "https://jjchicken.com/#website",
+ "url": "https://jjchicken.com",
+ "name": "JJ Chicken",
+ "inLanguage": [
+  "en-AE",
+  "ar-AE"
+ ],
+ "publisher": {
+  "@id": "https://jjchicken.com/#organization"
+ }
+}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is JJ Chicken halal?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. All JJ Chicken is Grade A, halal, hormone free and grain fed, marinated daily and charcoal-grilled to order."}}, {"@type": "Question", "name": "Where can I find JJ Chicken in the UAE?", "acceptedAnswer": {"@type": "Answer", "text": "JJ Chicken operates twelve branches across Dubai and Abu Dhabi, including Dubai Mall, Dubai Festival City, City Centre Mirdif, Al Barsha, Motor City, Kite Beach, Discovery Gardens, World Trade Center, Silicon Central, Abu Dhabi Corniche, Reem Mall and Al Raha."}}, {"@type": "Question", "name": "How do I order JJ Chicken online?", "acceptedAnswer": {"@type": "Answer", "text": "Order directly at order.jjchicken.com, or call the call centre on 600 545 554. JJ Chicken is also available on Deliveroo, Talabat, Careem, Noon Food and InstaShop."}}, {"@type": "Question", "name": "What makes charcoal-grilled chicken different?", "acceptedAnswer": {"@type": "Answer", "text": "Charcoal grilling gives a smokey, tender and juicy result, retains more nutrients, and lowers fat and sodium compared with frying. JJ Chicken was the first fast-casual restaurant to bring authentic charcoal-grilled chicken to the UAE, in 2010."}}, {"@type": "Question", "name": "What flavours can I choose?", "acceptedAnswer": {"@type": "Answer", "text": "Grilled chicken comes in three marinations: JJ Original, Spicy and Herbal. Wings come in Dynamite, Buffalo or Garlic Coriander."}}]}</script>
+</div>
+<div class="page" id="page-menu" hidden>
+
+
+<section class="pagehead grain">
+  <div class="ember ember-1"></div>
+  <div style="position:relative;z-index:2">
+    <div class="eyebrow"><span class="en">The menu</span><span class="ar">القائمة</span></div>
+    <h1 class="display sec-title"><span class="en">Off the coals</span><span class="ar">من على الفحم</span></h1>
+    <p class="sec-sub" style="max-width:62ch"><span class="en">Appetizers, salads, sandwiches, shawarma, burgers, platters, grills and a kids' menu — engineered for people who actually like chicken.</span><span class="ar">مقبّلات، سلطات، ساندويتشات، شاورما، برغر، صحون، مشاوي وقائمة أطفال — مصمّمة لمن يحبّ الدجاج فعلاً.</span></p>
+  </div>
+</section>
+
+<div class="marquee"><div class="marquee-track" id="mq"></div></div>
+
+<section class="sec">
+  <div class="notice">
+    <span class="en"><b>Prices and live availability are on order.jjchicken.com.</b> We keep them in one place so a seasonal change never leaves an out-of-date number sitting on the website.</span>
+    <span class="ar"><b>الأسعار والتوفّر المباشر على order.jjchicken.com.</b> نُبقيها في مكان واحد حتى لا يترك أي تغيير موسمي سعراً قديماً على الموقع.</span>
+  </div>
+  <div class="filters" id="menuFilters"></div>
+  <div id="menuWrap"></div>
+  <div style="margin-top:14px">
+    <a href="https://order.jjchicken.com" target="_blank" rel="noopener" class="btn-solid"><span class="en">Order online</span><span class="ar">اطلب أونلاين</span></a>
+  </div>
+</section>
+
+
+<section class="sec sauces">
+  <div class="sec-head">
+    <div class="sec-label"><span class="en">Not just chicken</span><span class="ar">ليس دجاجاً فحسب</span></div>
+    <h2 class="display sec-title"><span class="en">Sauce is not optional</span><span class="ar">الصوص ليس اختيارياً</span></h2>
+    <p class="sec-sub"><span class="en">Every sauce and salad is made fresh daily with no preservatives. Eighteen of them, and the wings alone come three ways.</span><span class="ar">كل صلصة وكل سلطة تُحضَّر طازجة يومياً دون مواد حافظة. ثمانية عشر صوصاً، والأجنحة وحدها بثلاث نكهات.</span></p>
+  </div>
+  <div class="sauce-cloud" id="sauceCloud"></div>
+</section>
+
+
+<footer>
+  <div class="foot-top">
+    <div>
+      <div class="mark" style="margin-bottom:18px"><span class="mark-glyph"><span>JJ</span></span><span class="mark-name">JJ CHICKEN</span></div>
+      <div class="foot-tel-l"><span class="en">Call centre</span><span class="ar">مركز الاتصال</span></div>
+      <a href="tel:600545554" class="foot-tel">600 545 554</a>
+    </div>
+    <nav class="foot-links">
+      <a href="#/menu"><span class="en">Menu</span><span class="ar">القائمة</span></a>
+      <a href="#/locations"><span class="en">Locations</span><span class="ar">الفروع</span></a>
+      <a href="#/franchise"><span class="en">Franchise</span><span class="ar">الامتياز</span></a>
+      <a href="https://order.jjchicken.com" target="_blank" rel="noopener"><span class="en">Order online</span><span class="ar">اطلب أونلاين</span></a>
+      <a href="#"><span class="en">Careers</span><span class="ar">الوظائف</span></a>
+      <a href="#"><span class="en">Contact</span><span class="ar">اتصل بنا</span></a>
+    </nav>
+    <div class="foot-social">
+      <div class="foot-tel-l"><span class="en">Follow</span><span class="ar">تابعنا</span></div>
+      <a href="https://www.instagram.com/jjchicken/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.facebook.com/jjchicken/" target="_blank" rel="noopener">Facebook</a>
+      <a href="mailto:info@jjchicken.com">info@jjchicken.com</a>
+    </div>
+  </div>
+  <p class="foot-note">
+    <span class="en">Concept build for the Almed Retail Website Rebuild Programme. Type shown in Oswald and Figtree as stand-ins for DIN Condensed Bold and Aftika, swapped in once licensed webfonts are supplied. Prices are not published on this site — they live on order.jjchicken.com so they are never out of date here.</span>
+    <span class="ar">نسخة تجريبية لبرنامج إعادة بناء مواقع ألمد ريتيل. الخطوط المعروضة Oswald وFigtree كبديل مؤقت عن DIN Condensed Bold وAftika، وتُستبدل فور توفير الخطوط المرخّصة. الأسعار غير منشورة على هذا الموقع — فهي على order.jjchicken.com حتى لا تصبح قديمة هنا.</span>
+  </p>
+</footer>
+
+<script type="application/ld+json">{
+ "@context": "https://schema.org",
+ "@type": "Menu",
+ "@id": "https://jjchicken.com/menu/#menu",
+ "name": "JJ Chicken Menu",
+ "inLanguage": "en-AE",
+ "hasMenuSection": [
+  {
+   "@type": "MenuSection",
+   "name": "Signature Grills",
+   "description": "Charcoal chicken, the way we have cooked it since 2010.",
+   "hasMenuItem": [
+    {
+     "@type": "MenuItem",
+     "name": "Full Grilled Chicken",
+     "description": "Served with fries, garlic sauce, pickles and Arabic bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Half Grilled Chicken",
+     "description": "Served with fries, garlic sauce, pickles and Arabic bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    }
+   ]
+  },
+  {
+   "@type": "MenuSection",
+   "name": "Platters",
+   "description": "Signature grilled chicken, real flavours, and sides worth showing up for.",
+   "hasMenuItem": [
+    {
+     "@type": "MenuItem",
+     "name": "Tawouk Platter",
+     "description": "Charcoal grilled tawouk, served with french fries, dipping sauce, pickles and Arabic bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Lamb Tikka Platter",
+     "description": "Charcoal grilled lamb tikka, served with french fries, dipping sauce, pickles and Arabic bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Kafta Platter",
+     "description": "Charcoal grilled kafta, served with french fries, dipping sauce, pickles and Arabic bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Mixed Grill Platter",
+     "description": "One skewer of grilled chicken tawouk, one of grilled lamb tikka and two of kafta. Served with spicy bread, grilled onions, grilled tomato, pickles and garlic dip.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    }
+   ]
+  },
+  {
+   "@type": "MenuSection",
+   "name": "JJ Specialty",
+   "hasMenuItem": [
+    {
+     "@type": "MenuItem",
+     "name": "JJ W Batata",
+     "description": "Two pieces of grilled chicken breast topped with crispy potato slices and JJ special batata sauce. Served with dip, pickles and Arabic bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "JJ Roasted Platter",
+     "description": "Two pieces of grilled chicken breast, your choice of flavour. Served with baby potatoes, grilled vegetables, garlic dip, pickles and Arabic bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "JJ Breast Platter",
+     "description": "Two pieces of grilled chicken breast, your choice of flavour. Served with your choice of side, garlic dip, pickles and Arabic bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "JJ W Rez",
+     "description": "JJ savoury rice mixed with minced beef and nuts, topped with grilled chicken breast. Served with yogurt.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    }
+   ]
+  },
+  {
+   "@type": "MenuSection",
+   "name": "JJ Bowls",
+   "hasMenuItem": [
+    {
+     "@type": "MenuItem",
+     "name": "JJ Healthy Bowl",
+     "description": "Grilled chicken breast over white rice with grilled vegetable skewers, sweet corn and cherry tomatoes. Topped with cheddar and tortilla bread, served with creamy BBQ sauce.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "JJ Crunch Bowl",
+     "description": "Crispy fried chicken tenders in sesame teriyaki glaze over white rice, with grilled broccoli, green capsicum, shredded iceberg, sweet corn, cherry tomatoes and jalapeños.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "JJ Smoky Bowl",
+     "description": "Grilled chicken breast over white rice with green capsicum, fava beans, shredded iceberg, sweet corn, cherry tomatoes, avocado and jalapeños. Served with smoky chipotle sauce.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "JJ Shawarma Bowl",
+     "description": "Chicken shawarma over basmati rice with diced tomatoes and shredded iceberg. Garnished with biwas and ranch sauce.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    }
+   ]
+  },
+  {
+   "@type": "MenuSection",
+   "name": "Chicken Shawarma",
+   "hasMenuItem": [
+    {
+     "@type": "MenuItem",
+     "name": "Shawarma Rolls",
+     "description": "Two chicken shawarma sandwiches rolled and cut into eight pieces, garnished with garlic, pickles and biwas. Served with fries.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Shawarma Platter",
+     "description": "Chicken shawarma with french fries, pickles, garlic and Arabic bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Hummus Shawarma",
+     "description": "Chicken shawarma slices served over hummus with Arabic bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Shawarma Sandwich",
+     "description": "Chicken shawarma with pickles and garlic sauce, wrapped in Arabic or saj bread. Regular or large.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Saj Shawarma Sandwich",
+     "description": "Chicken shawarma with pickles and garlic sauce, wrapped in saj bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    }
+   ]
+  },
+  {
+   "@type": "MenuSection",
+   "name": "Wings",
+   "description": "Wing it your way and drown 'em in sauce.",
+   "hasMenuItem": [
+    {
+     "@type": "MenuItem",
+     "name": "JJ Grilled Wings",
+     "description": "Charcoal grilled chicken wings, tossed in your choice of sauce. Six pieces.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "JJ Fried Wings",
+     "description": "Crispy fried chicken wings, tossed in your choice of sauce. Six pieces.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    }
+   ]
+  },
+  {
+   "@type": "MenuSection",
+   "name": "Burgers",
+   "description": "Loaded, sauced and stacked the way it should be. No shortcuts.",
+   "hasMenuItem": [
+    {
+     "@type": "MenuItem",
+     "name": "Signature Grilled Chicken",
+     "description": "JJ grilled chicken breast with garlic sauce, herb sauce, iceberg and pickles.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Crunchy Cheesy Chicken",
+     "description": "Grilled chicken breast and a crispy fried mozzarella patty with creamy BBQ, ranch, shredded iceberg and pickled jalapeños.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Buffalo Chicken",
+     "description": "Double-cheesed crispy chicken marinated in buffalo sauce, loaded with cheddar, jalapeños and our special ranch.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Cheesy Chicken",
+     "description": "Breaded chicken breast stuffed with mozzarella, with JJ cocktail sauce, lettuce, pickles and cheddar.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Lebanese Burger",
+     "description": "Grilled beef patty with mayonnaise, coleslaw, ketchup, fries and pickles.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Crunchy Cheesy Beef",
+     "description": "Grilled beef patty stacked with a crispy fried mozzarella patty, creamy BBQ, ranch, shredded iceberg and pickled jalapeños.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    }
+   ]
+  },
+  {
+   "@type": "MenuSection",
+   "name": "Sandwiches & Wraps",
+   "description": "Real chicken. Real ingredients. Real satisfaction.",
+   "hasMenuItem": [
+    {
+     "@type": "MenuItem",
+     "name": "JJ Chicken Sandwich",
+     "description": "Pulled roasted chicken, garlic sauce and pickles. Wrapped in Arabic or submarine bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "JJ Tawouk Sandwich",
+     "description": "Grilled marinated chicken tawouk with garlic sauce and pickles. Served in Arabic bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Lebanese Tawouk Sandwich",
+     "description": "Grilled marinated tawouk with garlic sauce, coleslaw, fries, ketchup and pickles. Served in Arabic bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Lebanese Kafta Sandwich",
+     "description": "Charcoal grilled kafta with hummus, parsley mix, tomato and pickles. Served in Arabic bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Lamb Tikka Sandwich",
+     "description": "Charcoal grilled marinated lamb tikka with hummus, parsley mix, grilled onions and tomato. Served in Arabic bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Chicken Avocado Wrap",
+     "description": "Grilled chicken breast with avocado, spicy and herb sauces, kidney beans, tomato and spring onions. Served in a tortilla wrap.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    }
+   ]
+  },
+  {
+   "@type": "MenuSection",
+   "name": "Submarines",
+   "hasMenuItem": [
+    {
+     "@type": "MenuItem",
+     "name": "Grilled Halloumi Sub",
+     "description": "Pulled charcoal grilled chicken, grilled halloumi, tomato, pickles and garlic sauce in toasted submarine bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Grilled Chicken Sub",
+     "description": "Pulled grilled chicken with cheddar, lettuce, tomato, corn and pickles in toasted submarine bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Chicken Fajita Sub",
+     "description": "Spicy chicken fajita with sautéed peppers, onion, mixed cheese, iceberg and dual sauces in toasted submarine bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Crispy Chicken Sub",
+     "description": "Breaded chicken tenders with garlic sauce, ketchup, lettuce, tomato and pickles in toasted submarine bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Francisco Sub",
+     "description": "Sautéed chicken, mayo, corn, iceberg lettuce and mixed cheese in toasted submarine bread.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    }
+   ]
+  },
+  {
+   "@type": "MenuSection",
+   "name": "Signature Starters",
+   "hasMenuItem": [
+    {
+     "@type": "MenuItem",
+     "name": "Messy Fries",
+     "description": "Crispy golden seasoned fries topped with breaded chicken bites, jalapeños, fried onion slices and cheddar cheese sauce.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Crispy Tenders",
+     "description": "Breaded chicken tenders, served with your choice of dip.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Mozzarella Sticks",
+     "description": "Served with your choice of dip.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Cheese Rolls",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Hummus Shawarma",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Hummus",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Moutabbal",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Lentil Soup",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Twister Fries",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "French Fries",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    }
+   ]
+  },
+  {
+   "@type": "MenuSection",
+   "name": "Fresh Salads",
+   "hasMenuItem": [
+    {
+     "@type": "MenuItem",
+     "name": "Chicken Avocado Salad",
+     "description": "Fresh romaine lettuce, rocca, corn, red capsicum and avocado, topped with our specialty grilled chicken breast. Served with lemon oil dressing.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Chicken Caesar Salad",
+     "description": "Fresh romaine lettuce and cherry tomato, topped with grilled chicken breast, parmesan and croutons. Served with JJ Caesar dressing.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Fattoush",
+     "description": "Fresh romaine lettuce, tomato, cucumber, fresh mint, radish, onions, green capsicum and fried pita. Served with JJ Fattoush dressing.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Tabbouleh",
+     "description": "Freshly chopped parsley, burghul, tomatoes and sweet peppery onions. Served with lemon oil dressing.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    }
+   ]
+  },
+  {
+   "@type": "MenuSection",
+   "name": "Sides",
+   "hasMenuItem": [
+    {
+     "@type": "MenuItem",
+     "name": "Grilled Baby Potato",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Grilled Corn On The Cob",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Grilled Halloumi",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Grilled Vegetables",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "White Rice",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Coleslaw",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    }
+   ]
+  },
+  {
+   "@type": "MenuSection",
+   "name": "Combo Meals",
+   "hasMenuItem": [
+    {
+     "@type": "MenuItem",
+     "name": "JJ Platter Meal",
+     "description": "Your choice from JJ specialty platters, with a side and a soft drink.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Mixed Grill Combo",
+     "description": "Mixed grill platter with your choice of side and a soft drink.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Sandwich Combo",
+     "description": "Your choice of a shawarma or tawouk sandwich with fries and a soft drink.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Burger Combo",
+     "description": "Your choice of grilled chicken or beef burger with fries and a soft drink.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    }
+   ]
+  },
+  {
+   "@type": "MenuSection",
+   "name": "Kids Meals",
+   "hasMenuItem": [
+    {
+     "@type": "MenuItem",
+     "name": "Kids Chicken Nuggets Meal",
+     "description": "Six pieces of nuggets, served with fries and a juice or water.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Kids Tenders Meal",
+     "description": "Three pieces of breaded chicken tenders, served with fries and a juice or water.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Kids Chicken Burger Meal",
+     "description": "Crispy breaded chicken patty with cheese on a soft bun, served with fries and a juice or water.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    }
+   ]
+  },
+  {
+   "@type": "MenuSection",
+   "name": "Desserts",
+   "hasMenuItem": [
+    {
+     "@type": "MenuItem",
+     "name": "Lazy Cake",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Oreo Chocolate Custard",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Rice Pudding",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Mouhalabiya",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    }
+   ]
+  },
+  {
+   "@type": "MenuSection",
+   "name": "Drinks",
+   "hasMenuItem": [
+    {
+     "@type": "MenuItem",
+     "name": "Fresh Juice",
+     "description": "Orange or lemonade.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Laban Ayran",
+     "description": "Zero, mint or original.",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Soft Drink",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Sparkling Water",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Mineral Water",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    },
+    {
+     "@type": "MenuItem",
+     "name": "Red Bull",
+     "suitableForDiet": "https://schema.org/HalalDiet"
+    }
+   ]
+  }
+ ]
+}</script>
+</div>
+<div class="page" id="page-locations" hidden>
+
+
+<section class="pagehead grain">
+  <div class="ember ember-1"></div>
+  <div style="position:relative;z-index:2">
+    <div class="eyebrow"><span class="en">Find us</span><span class="ar">أين تجدنا</span></div>
+    <h1 class="display sec-title"><span class="en">Twelve across the UAE</span><span class="ar">اثنا عشر فرعاً في الإمارات</span></h1>
+    <p class="sec-sub" style="max-width:62ch"><span class="en">Street shops, mall food courts and fast-casual units across Dubai and Abu Dhabi — plus the food truck.</span><span class="ar">محلات في الشارع، وأركان طعام في المولات، ووحدات كاجوال سريعة في دبي وأبوظبي — إضافة إلى عربة الطعام.</span></p>
+  </div>
+</section>
+
+<div class="marquee"><div class="marquee-track" id="mq"></div></div>
+
+<section class="sec">
+  <div class="filters" id="locFilters">
+    <button class="chip on" data-city="all"><span class="en">All areas</span><span class="ar">كل المناطق</span></button>
+    <button class="chip" data-city="Dubai"><span class="en">Dubai</span><span class="ar">دبي</span></button>
+    <button class="chip" data-city="Abu Dhabi"><span class="en">Abu Dhabi</span><span class="ar">أبوظبي</span></button>
+  </div>
+  <div class="loc-count" id="locCount"></div>
+  <div class="loc-grid" id="locGrid"></div>
+
+  <div class="map-wrap"><div id="map"></div></div>
+
+  <div class="notice" style="margin-top:26px">
+    <span class="en"><b>The food truck.</b> JJ also runs a food truck alongside the twelve branches. Tell us where it parks and how bookings work, and it gets its own entry here with its own schedule.</span>
+    <span class="ar"><b>عربة الطعام.</b> تُشغّل ج ج أيضاً عربة طعام إلى جانب الفروع الاثني عشر. أخبرونا أين تتمركز وكيف يتم حجزها، وسيكون لها مدخل خاص هنا بجدولها الخاص.</span>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-top">
+    <div>
+      <div class="mark" style="margin-bottom:18px"><span class="mark-glyph"><span>JJ</span></span><span class="mark-name">JJ CHICKEN</span></div>
+      <div class="foot-tel-l"><span class="en">Call centre</span><span class="ar">مركز الاتصال</span></div>
+      <a href="tel:600545554" class="foot-tel">600 545 554</a>
+    </div>
+    <nav class="foot-links">
+      <a href="#/menu"><span class="en">Menu</span><span class="ar">القائمة</span></a>
+      <a href="#/locations"><span class="en">Locations</span><span class="ar">الفروع</span></a>
+      <a href="#/franchise"><span class="en">Franchise</span><span class="ar">الامتياز</span></a>
+      <a href="https://order.jjchicken.com" target="_blank" rel="noopener"><span class="en">Order online</span><span class="ar">اطلب أونلاين</span></a>
+      <a href="#"><span class="en">Careers</span><span class="ar">الوظائف</span></a>
+      <a href="#"><span class="en">Contact</span><span class="ar">اتصل بنا</span></a>
+    </nav>
+    <div class="foot-social">
+      <div class="foot-tel-l"><span class="en">Follow</span><span class="ar">تابعنا</span></div>
+      <a href="https://www.instagram.com/jjchicken/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.facebook.com/jjchicken/" target="_blank" rel="noopener">Facebook</a>
+      <a href="mailto:info@jjchicken.com">info@jjchicken.com</a>
+    </div>
+  </div>
+  <p class="foot-note">
+    <span class="en">Concept build for the Almed Retail Website Rebuild Programme. Type shown in Oswald and Figtree as stand-ins for DIN Condensed Bold and Aftika, swapped in once licensed webfonts are supplied. Prices are not published on this site — they live on order.jjchicken.com so they are never out of date here.</span>
+    <span class="ar">نسخة تجريبية لبرنامج إعادة بناء مواقع ألمد ريتيل. الخطوط المعروضة Oswald وFigtree كبديل مؤقت عن DIN Condensed Bold وAftika، وتُستبدل فور توفير الخطوط المرخّصة. الأسعار غير منشورة على هذا الموقع — فهي على order.jjchicken.com حتى لا تصبح قديمة هنا.</span>
+  </p>
+</footer>
+
+</div>
+<div class="page" id="page-franchise" hidden>
+
+
+<section class="pagehead grain">
+  <div class="ember ember-2"></div>
+  <div style="position:relative;z-index:2">
+    <div class="eyebrow"><span class="en">Franchise</span><span class="ar">الامتياز</span></div>
+    <h1 class="display sec-title"><span class="en">A category we created</span><span class="ar">فئة أنشأناها</span></h1>
+    <p class="sec-sub" style="max-width:62ch"><span class="en">Charcoal-grilled chicken as a fast-casual format did not exist in the UAE before JJ. The model is now open to operators across the GCC.</span><span class="ar">لم يكن الدجاج المشوي على الفحم كنموذج كاجوال سريع موجوداً في الإمارات قبل جي جي. النموذج متاح الآن للمشغّلين في دول الخليج.</span></p>
+  </div>
+</section>
+
+<div class="marquee"><div class="marquee-track" id="mq"></div></div>
+
+<section class="sec fr">
+  <div class="stats">
+    <div class="stat"><div class="stat-n">2010</div><div class="stat-l"><span class="en">Concept created in the UAE</span><span class="ar">تأسّس المفهوم في الإمارات</span></div></div>
+    <div class="stat"><div class="stat-n">12</div><div class="stat-l"><span class="en">Outlets across Dubai &amp; Abu Dhabi</span><span class="ar">فرعاً في دبي وأبوظبي</span></div></div>
+    <div class="stat"><div class="stat-n">4.5</div><div class="stat-l"><span class="en">Average rating across delivery platforms</span><span class="ar">متوسط التقييم على منصات التوصيل</span></div></div>
+    <div class="stat"><div class="stat-n">1st</div><div class="stat-l"><span class="en">Fast-casual charcoal grill in the UAE</span><span class="ar">أول شواء على الفحم كاجوال سريع في الإمارات</span></div></div>
+  </div>
+
+
+  <div class="sec-head" style="max-width:62ch">
+    <div class="sec-label"><span class="en">Why the model works</span><span class="ar">لماذا ينجح النموذج</span></div>
+    <h2 class="display" style="font-size:clamp(28px,5vw,52px);margin-bottom:16px"><span class="en">Seven reasons</span><span class="ar">سبعة أسباب</span></h2>
+  </div>
+  <div class="offer-grid">
+    <div class="offer">
+      <h4><span class="en">Simplicity</span><span class="ar">البساطة</span></h4>
+      <ul><li><span class="en">One main ingredient. Working with chicken alone lowers wastage and keeps the operation easy to control.</span><span class="ar">مكوّن رئيسي واحد. العمل بالدجاج وحده يقلّل الهدر ويُبقي التشغيل سهل الضبط.</span></li></ul>
+    </div>
+    <div class="offer">
+      <h4><span class="en">Uniqueness</span><span class="ar">التفرّد</span></h4>
+      <ul><li><span class="en">The only quick-service restaurant serving authentic charcoal-grilled chicken, with a taste that cannot be replicated on a fryer or a flat top.</span><span class="ar">المطعم الوحيد للوجبات السريعة الذي يقدّم دجاجاً مشوياً على الفحم الأصيل، بنكهة لا يمكن تقليدها بالقلي أو الشوي العادي.</span></li></ul>
+    </div>
+    <div class="offer">
+      <h4><span class="en">Freshness</span><span class="ar">الطزاجة</span></h4>
+      <ul><li><span class="en">Chicken marinated daily and charcoal-grilled on order. Every sauce is homemade with no preservatives.</span><span class="ar">دجاج يُتبّل يومياً ويُشوى على الفحم عند الطلب. وكل صلصة تُحضَّر في المطبخ دون مواد حافظة.</span></li></ul>
+    </div>
+    <div class="offer">
+      <h4><span class="en">Knowledge</span><span class="ar">المعرفة</span></h4>
+      <ul><li><span class="en">Recipes created by executive chefs and engineered for consistency across every outlet. We train your staff to that standard.</span><span class="ar">وصفات وضعها شيفات تنفيذيون وهُندست لتكون متّسقة في كل فرع. ونُدرّب فريقك على هذا المستوى.</span></li></ul>
+    </div>
+    <div class="offer">
+      <h4><span class="en">Control</span><span class="ar">التحكّم</span></h4>
+      <ul><li><span class="en">Every outlet runs on an automated cost-control system, with established food-safety and hygiene procedures.</span><span class="ar">كل فرع يعمل بنظام آلي لضبط التكاليف، مع إجراءات راسخة لسلامة الغذاء والنظافة.</span></li></ul>
+    </div>
+    <div class="offer">
+      <h4><span class="en">Support</span><span class="ar">الدعم</span></h4>
+      <ul><li><span class="en">A full training and support system for franchisees, with ongoing marketing assistance.</span><span class="ar">نظام تدريب ودعم متكامل لأصحاب الامتياز، مع مساعدة تسويقية مستمرة.</span></li></ul>
+    </div>
+    <div class="offer">
+      <h4><span class="en">Growth potential</span><span class="ar">إمكانات النمو</span></h4>
+      <ul><li><span class="en">Chicken is the most consumed meat item, and the category we operate in is one we created.</span><span class="ar">الدجاج هو اللحم الأكثر استهلاكاً، والفئة التي نعمل فيها هي فئة أنشأناها بأنفسنا.</span></li></ul>
+    </div>
+  </div>
+
+  <div class="sec-head" style="max-width:62ch">
+    <div class="sec-label"><span class="en">Three models</span><span class="ar">ثلاثة نماذج</span></div>
+    <h2 class="display" style="font-size:clamp(28px,5vw,52px);margin-bottom:16px"><span class="en">Pick the scale that fits</span><span class="ar">اختر الحجم المناسب</span></h2>
+  </div>
+  <div class="models">
+    <div class="model">
+      <div class="model-n"><span class="en">Model 01</span><span class="ar">النموذج ٠١</span></div>
+      <h4><span class="en">Individual Unit</span><span class="ar">وحدة فردية</span></h4>
+      <p><span class="en">A single outlet under licence, with full brand, operations and training support from day one.</span><span class="ar">فرع واحد بموجب ترخيص، مع دعم كامل للعلامة والتشغيل والتدريب منذ اليوم الأول.</span></p>
+    </div>
+    <div class="model">
+      <div class="model-n"><span class="en">Model 02</span><span class="ar">النموذج ٠٢</span></div>
+      <h4><span class="en">Area Development</span><span class="ar">تطوير منطقة</span></h4>
+      <p><span class="en">Multiple units across an agreed area, on a development schedule set with the franchisor.</span><span class="ar">عدة فروع في منطقة متّفق عليها، وفق جدول تطوير يُحدَّد مع مانح الامتياز.</span></p>
+    </div>
+    <div class="model">
+      <div class="model-n"><span class="en">Model 03</span><span class="ar">النموذج ٠٣</span></div>
+      <h4><span class="en">Territory</span><span class="ar">امتياز إقليمي</span></h4>
+      <p><span class="en">Exclusive rights to build and operate the brand across a defined territory or market.</span><span class="ar">حقوق حصرية لبناء وتشغيل العلامة في إقليم أو سوق محدّد.</span></p>
+    </div>
+  </div>
+
+  <div class="sec-head" style="max-width:62ch">
+    <div class="sec-label"><span class="en">What we offer</span><span class="ar">ما نقدّمه</span></div>
+    <h2 class="display" style="font-size:clamp(28px,5vw,52px);margin-bottom:16px"><span class="en">Support, not a logo</span><span class="ar">دعم حقيقي لا مجرّد شعار</span></h2>
+  </div>
+  <div class="offer-grid">
+    <div class="offer">
+      <h4><span class="en">Location selection</span><span class="ar">اختيار الموقع</span></h4>
+      <ul>
+        <li><span class="en">Collaboration on site selection, field and demographic evaluation</span><span class="ar">تعاون في اختيار المواقع والتقييم الميداني والديموغرافي</span></li>
+        <li><span class="en">Assistance with lease review and negotiation</span><span class="ar">مساعدة في مراجعة عقد الإيجار والتفاوض عليه</span></li>
+      </ul>
+    </div>
+    <div class="offer">
+      <h4><span class="en">Design &amp; construction</span><span class="ar">التصميم والإنشاء</span></h4>
+      <ul>
+        <li><span class="en">JJ Chicken design guidelines and unit design assistance</span><span class="ar">إرشادات تصميم جي جي تشيكن والمساعدة في تصميم الوحدة</span></li>
+        <li><span class="en">Equipment specifications and selection</span><span class="ar">مواصفات المعدات واختيارها</span></li>
+        <li><span class="en">POS selected from an approved supplier</span><span class="ar">نظام نقاط بيع من مورّد معتمد</span></li>
+        <li><span class="en">Final design review and construction guidance</span><span class="ar">مراجعة التصميم النهائي وإرشاد أثناء الإنشاء</span></li>
+      </ul>
+    </div>
+    <div class="offer">
+      <h4><span class="en">Training &amp; opening</span><span class="ar">التدريب والافتتاح</span></h4>
+      <ul>
+        <li><span class="en">Four weeks of in-store and classroom training for four members of your management team</span><span class="ar">أربعة أسابيع من التدريب داخل الفرع وفي القاعة لأربعة من فريق الإدارة لديك</span></li>
+        <li><span class="en">Two weeks of pre-opening and grand-opening support</span><span class="ar">أسبوعان من الدعم قبل الافتتاح وأثناءه</span></li>
+        <li><span class="en">Detailed operating manual and licence to operate</span><span class="ar">دليل تشغيل مفصّل وترخيص التشغيل</span></li>
+        <li><span class="en">Access to the approved supply-chain network</span><span class="ar">وصول إلى شبكة التوريد المعتمدة</span></li>
+        <li><span class="en">JJ Chicken recipes and cooking techniques</span><span class="ar">وصفات جي جي تشيكن وتقنيات الطهي</span></li>
+      </ul>
+    </div>
+    <div class="offer">
+      <h4><span class="en">Marketing &amp; product</span><span class="ar">التسويق والمنتج</span></h4>
+      <ul>
+        <li><span class="en">Marketing plan implementation and in-store artwork</span><span class="ar">تنفيذ الخطة التسويقية وتصاميم داخل الفرع</span></li>
+        <li><span class="en">Brand manual, guidelines and a sample social calendar</span><span class="ar">دليل العلامة والإرشادات ونموذج تقويم للتواصل الاجتماعي</span></li>
+        <li><span class="en">Periodic business review and progress evaluation</span><span class="ar">مراجعة دورية للأعمال وتقييم التقدّم</span></li>
+        <li><span class="en">A development chef and ongoing menu engineering</span><span class="ar">شيف تطوير وهندسة مستمرة للقائمة</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sec-head" style="max-width:62ch">
+    <div class="sec-label"><span class="en">What we look for</span><span class="ar">ما نبحث عنه</span></div>
+    <h2 class="display" style="font-size:clamp(28px,5vw,52px);margin-bottom:16px"><span class="en">The right operator</span><span class="ar">المشغّل المناسب</span></h2>
+  </div>
+  <div class="criteria">
+    <span class="crit"><span class="en">3+ years business experience, ideally F&amp;B</span><span class="ar">٣ سنوات خبرة أعمال أو أكثر، ويفضّل في قطاع الأغذية</span></span>
+    <span class="crit"><span class="en">Access to prime locations</span><span class="ar">وصول إلى مواقع متميّزة</span></span>
+    <span class="crit"><span class="en">Capital to set up and sustain a development plan</span><span class="ar">رأس مال للتأسيس ودعم خطة التطوير</span></span>
+    <span class="crit"><span class="en">Ability to source, store and distribute</span><span class="ar">القدرة على التوريد والتخزين والتوزيع</span></span>
+    <span class="crit"><span class="en">A shared value system</span><span class="ar">منظومة قيم مشتركة</span></span>
+  </div>
+
+  <div class="sec-head" style="max-width:62ch">
+    <div class="sec-label"><span class="en">Next steps</span><span class="ar">الخطوات التالية</span></div>
+    <h2 class="display" style="font-size:clamp(28px,5vw,52px);margin-bottom:16px"><span class="en">How it moves</span><span class="ar">كيف تسير الأمور</span></h2>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="step-n">01</div><p><span class="en">You get in touch and we open the conversation.</span><span class="ar">تتواصل معنا ونبدأ الحوار.</span></p></div>
+    <div class="step"><div class="step-n">02</div><p><span class="en">We send the FAQs and the franchise enquiry form.</span><span class="ar">نرسل الأسئلة الشائعة ونموذج طلب الامتياز.</span></p></div>
+    <div class="step"><div class="step-n">03</div><p><span class="en">Due diligence, based on the form you return.</span><span class="ar">العناية الواجبة، بناءً على النموذج الذي ترسله.</span></p></div>
+    <div class="step"><div class="step-n">04</div><p><span class="en">NDA and letter of intent signed.</span><span class="ar">توقيع اتفاقية السرية وخطاب النوايا.</span></p></div>
+    <div class="step"><div class="step-n">05</div><p><span class="en">Extended FAQs shared, including financial assumptions.</span><span class="ar">مشاركة الأسئلة الموسّعة، بما فيها الافتراضات المالية.</span></p></div>
+    <div class="step"><div class="step-n">06</div><p><span class="en">Franchise agreement signed.</span><span class="ar">توقيع اتفاقية الامتياز.</span></p></div>
+  </div>
+
+  <a href="#" class="fr-cta"><span class="en">Request the franchise pack</span><span class="ar">اطلب ملف الامتياز</span></a>
+</section>
+
+<footer>
+  <div class="foot-top">
+    <div>
+      <div class="mark" style="margin-bottom:18px"><span class="mark-glyph"><span>JJ</span></span><span class="mark-name">JJ CHICKEN</span></div>
+      <div class="foot-tel-l"><span class="en">Call centre</span><span class="ar">مركز الاتصال</span></div>
+      <a href="tel:600545554" class="foot-tel">600 545 554</a>
+    </div>
+    <nav class="foot-links">
+      <a href="#/menu"><span class="en">Menu</span><span class="ar">القائمة</span></a>
+      <a href="#/locations"><span class="en">Locations</span><span class="ar">الفروع</span></a>
+      <a href="#/franchise"><span class="en">Franchise</span><span class="ar">الامتياز</span></a>
+      <a href="https://order.jjchicken.com" target="_blank" rel="noopener"><span class="en">Order online</span><span class="ar">اطلب أونلاين</span></a>
+      <a href="#"><span class="en">Careers</span><span class="ar">الوظائف</span></a>
+      <a href="#"><span class="en">Contact</span><span class="ar">اتصل بنا</span></a>
+    </nav>
+    <div class="foot-social">
+      <div class="foot-tel-l"><span class="en">Follow</span><span class="ar">تابعنا</span></div>
+      <a href="https://www.instagram.com/jjchicken/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.facebook.com/jjchicken/" target="_blank" rel="noopener">Facebook</a>
+      <a href="mailto:info@jjchicken.com">info@jjchicken.com</a>
+    </div>
+  </div>
+  <p class="foot-note">
+    <span class="en">Concept build for the Almed Retail Website Rebuild Programme. Type shown in Oswald and Figtree as stand-ins for DIN Condensed Bold and Aftika, swapped in once licensed webfonts are supplied. Prices are not published on this site — they live on order.jjchicken.com so they are never out of date here.</span>
+    <span class="ar">نسخة تجريبية لبرنامج إعادة بناء مواقع ألمد ريتيل. الخطوط المعروضة Oswald وFigtree كبديل مؤقت عن DIN Condensed Bold وAftika، وتُستبدل فور توفير الخطوط المرخّصة. الأسعار غير منشورة على هذا الموقع — فهي على order.jjchicken.com حتى لا تصبح قديمة هنا.</span>
+  </p>
+</footer>
+
+</div>
+<script>
+const BRANCHES = [
+ {
+  "city": "Dubai",
+  "cityAr": "دبي",
+  "name": "Al Barsha 1",
+  "nameAr": "البرشاء ١",
+  "type": "street",
+  "addr": "Barsha Road, Saleh Bin Lahej Building, Shop #5",
+  "addrAr": "شارع البرشاء، بناية صالح بن لاهج، محل رقم ٥",
+  "tel": "04 447 3955",
+  "lat": 25.1144486961269,
+  "lng": 55.2059978090191,
+  "map": "https://maps.app.goo.gl/8iDj9nqfWtiTTTCU9"
+ },
+ {
+  "city": "Dubai",
+  "cityAr": "دبي",
+  "name": "World Trade Center",
+  "nameAr": "مركز دبي التجاري العالمي",
+  "type": "street",
+  "addr": "The Apartments, Bloc B, World Trade Center",
+  "addrAr": "ذا أبارتمنتس، بلوك B، مركز دبي التجاري العالمي",
+  "tel": "04 351 1181",
+  "lat": 25.2226723430101,
+  "lng": 55.2850899452649,
+  "map": "https://maps.app.goo.gl/pakD2rcb2ZnDDckW9"
+ },
+ {
+  "city": "Dubai",
+  "cityAr": "دبي",
+  "name": "Motor City",
+  "nameAr": "موتور سيتي",
+  "type": "street",
+  "addr": "Fox Hills 8, Main Road",
+  "addrAr": "فوكس هيلز ٨، الطريق الرئيسي",
+  "tel": "04 589 6840",
+  "lat": 25.0480645950429,
+  "lng": 55.2466667151034,
+  "map": "https://maps.app.goo.gl/ubyFvEoaUG1pyA9p6"
+ },
+ {
+  "city": "Dubai",
+  "cityAr": "دبي",
+  "name": "Kite Beach",
+  "nameAr": "كايت بيتش",
+  "type": "street",
+  "addr": "Kite Beach, Umm Suqeim",
+  "addrAr": "كايت بيتش، أم سقيم",
+  "tel": "055 759 9721",
+  "lat": 25.16618696,
+  "lng": 55.20976643,
+  "map": "https://maps.app.goo.gl/cSHcSqAsRp2BSN3BA"
+ },
+ {
+  "city": "Dubai",
+  "cityAr": "دبي",
+  "name": "Discovery Gardens",
+  "nameAr": "ديسكفري غاردنز",
+  "type": "fastcasual",
+  "addr": "Jebel Ali Village, Discovery Gardens",
+  "addrAr": "قرية جبل علي، ديسكفري غاردنز",
+  "tel": "04 427 3969",
+  "lat": 25.0351023157996,
+  "lng": 55.1479590783286,
+  "map": "https://maps.app.goo.gl/NKkPF7LwKG8eDcoR6"
+ },
+ {
+  "city": "Dubai",
+  "cityAr": "دبي",
+  "name": "Silicon Central",
+  "nameAr": "سيليكون سنترال",
+  "type": "mall",
+  "addr": "Silicon Central Mall, Dubai Silicon Oasis",
+  "addrAr": "سيليكون سنترال مول، واحة دبي للسيليكون",
+  "tel": "600 545 554",
+  "lat": null,
+  "lng": null,
+  "map": "#",
+  "todo": "Confirm outlet phone, exact unit and Google Maps pin with Almed"
+ },
+ {
+  "city": "Dubai",
+  "cityAr": "دبي",
+  "name": "City Centre Mirdif",
+  "nameAr": "سيتي سنتر مردف",
+  "type": "foodcourt",
+  "addr": "Food Court, North Wing, Level 2, Sheikh Mohammed Bin Zayed Rd",
+  "addrAr": "ركن الطعام، الجناح الشمالي، الطابق ٢، شارع الشيخ محمد بن زايد",
+  "tel": "04 888 0018",
+  "lat": 25.2174679730124,
+  "lng": 55.4080525801876,
+  "map": "https://maps.app.goo.gl/Eg1TjWLY76VDJfW87"
+ },
+ {
+  "city": "Dubai",
+  "cityAr": "دبي",
+  "name": "Dubai Mall",
+  "nameAr": "دبي مول",
+  "type": "foodcourt",
+  "addr": "The Dubai Mall",
+  "addrAr": "دبي مول",
+  "tel": "04 388 6081",
+  "lat": 25.19642335,
+  "lng": 55.27969421,
+  "map": "https://maps.app.goo.gl/2tSuwjKwy4XETSa8A"
+ },
+ {
+  "city": "Dubai",
+  "cityAr": "دبي",
+  "name": "Dubai Festival City",
+  "nameAr": "دبي فستيفال سيتي",
+  "type": "foodcourt",
+  "addr": "Food Court, Level 2, next to KFC",
+  "addrAr": "ركن الطعام، الطابق ٢، بجانب كنتاكي",
+  "tel": "04 258 5866",
+  "lat": 25.2245816868688,
+  "lng": 55.3534400934306,
+  "map": "https://maps.app.goo.gl/dZWDFvERDh3FfENa7"
+ },
+ {
+  "city": "Abu Dhabi",
+  "cityAr": "أبوظبي",
+  "name": "Corniche",
+  "nameAr": "الكورنيش",
+  "type": "street",
+  "addr": "Corniche St, Nakhl Al Hilaywah Street, Parking Lot W12",
+  "addrAr": "شارع الكورنيش، شارع نخل الحليوة، موقف W12",
+  "tel": "02 245 8857",
+  "lat": 24.4678035501636,
+  "lng": 54.3338291169304,
+  "map": "https://maps.app.goo.gl/YQQfScrbt592NtPEA"
+ },
+ {
+  "city": "Abu Dhabi",
+  "cityAr": "أبوظبي",
+  "name": "Reem Mall",
+  "nameAr": "ريم مول",
+  "type": "foodcourt",
+  "addr": "Reem Island Mall, Food Court",
+  "addrAr": "ريم آيلاند مول، ركن الطعام",
+  "tel": "056 326 5012",
+  "lat": 24.4885540930331,
+  "lng": 54.4005210533968,
+  "map": "https://maps.app.goo.gl/gqbd6Skec1r3vzWT6"
+ },
+ {
+  "city": "Abu Dhabi",
+  "cityAr": "أبوظبي",
+  "name": "Al Raha",
+  "nameAr": "الراحة",
+  "type": "foodcourt",
+  "addr": "Area 4048, Channel St, Al Raha, RBW13",
+  "addrAr": "المنطقة ٤٠٤٨، شارع القناة، الراحة، RBW13",
+  "tel": "02 557 5014",
+  "lat": 24.4391522239162,
+  "lng": 54.5741605764523,
+  "map": "https://maps.app.goo.gl/usMBohkVv8i9Y6dz6"
+ }
+];
+const MENU = {
+  "_source": "JJ - Board Menu - V6 - Preview.pdf and Menu Design - V4 - Preview.pdf (2026). Supersedes the brand book menu pages, which are out of date.",
+  "_note": "Prices deliberately omitted. Pricing and live availability live on order.jjchicken.com (ChatFood) so the website can never carry a stale number.",
+  "categories": [
+    {
+      "id": "grills", "name": "Signature Grills", "nameAr": "المشاوي المميّزة",
+      "blurb": "Charcoal chicken, the way we have cooked it since 2010.",
+      "blurbAr": "دجاج على الفحم، بالطريقة التي نطبخه بها منذ ٢٠١٠.",
+      "items": [
+        {"name":"Full Grilled Chicken","nameAr":"فروج مشوي كامل","desc":"Served with fries, garlic sauce, pickles and Arabic bread.","descAr":"يُقدَّم مع بطاطا مقلية، صوص ثوم، مخلل وخبز عربي.","tags":["best"],"flavours":true},
+        {"name":"Half Grilled Chicken","nameAr":"نصف فروج مشوي","desc":"Served with fries, garlic sauce, pickles and Arabic bread.","descAr":"يُقدَّم مع بطاطا مقلية، صوص ثوم، مخلل وخبز عربي.","tags":[],"flavours":true}
+      ]
+    },
+    {
+      "id": "platters", "name": "Platters", "nameAr": "الأطباق",
+      "blurb": "Signature grilled chicken, real flavours, and sides worth showing up for.",
+      "blurbAr": "دجاج مشوي مميّز، نكهات حقيقية، وأطباق جانبية تستحق الحضور.",
+      "items": [
+        {"name":"Tawouk Platter","nameAr":"طبق طاووق","desc":"Charcoal grilled tawouk, served with french fries, dipping sauce, pickles and Arabic bread.","descAr":"طاووق مشوي على الفحم، يُقدَّم مع بطاطا مقلية، صلصة تغميس، مخلل وخبز عربي.","tags":["sig"],"flavours":false},
+        {"name":"Lamb Tikka Platter","nameAr":"طبق لحم غنم مشوي","desc":"Charcoal grilled lamb tikka, served with french fries, dipping sauce, pickles and Arabic bread.","descAr":"تكا لحم مشوية على الفحم، تُقدَّم مع بطاطا مقلية، صلصة تغميس، مخلل وخبز عربي.","tags":[],"flavours":false},
+        {"name":"Kafta Platter","nameAr":"طبق كفتة","desc":"Charcoal grilled kafta, served with french fries, dipping sauce, pickles and Arabic bread.","descAr":"كفتة مشوية على الفحم، تُقدَّم مع بطاطا مقلية، صلصة تغميس، مخلل وخبز عربي.","tags":[],"flavours":false},
+        {"name":"Mixed Grill Platter","nameAr":"طبق مشاوي مشكّلة","desc":"One skewer of grilled chicken tawouk, one of grilled lamb tikka and two of kafta. Served with spicy bread, grilled onions, grilled tomato, pickles and garlic dip.","descAr":"سيخ طاووق دجاج مشوي، سيخ تكا خروف، وسيخان كفتة. يُقدَّم مع خبز مع البهارات، بصل مشوي، طماطم مشوية، مخلل وصلصة ثوم.","tags":["best"],"flavours":false}
+      ]
+    },
+    {
+      "id": "specialty", "name": "JJ Specialty", "nameAr": "أطباق جي جي المميّزة",
+      "blurb": "",
+      "blurbAr": "",
+      "items": [
+        {"name":"JJ W Batata","nameAr":"جي جي وبطاطا","desc":"Two pieces of grilled chicken breast topped with crispy potato slices and JJ special batata sauce. Served with dip, pickles and Arabic bread.","descAr":"قطعتان من صدر الدجاج المشوي مع شرائح بطاطا مقرمشة وصلصة البطاطا الخاصة بـ ج ج. يُقدَّم مع مخلل وخبز عربي.","tags":["sig","best"],"flavours":false},
+        {"name":"JJ Roasted Platter","nameAr":"طبق جي جي المشوي","desc":"Two pieces of grilled chicken breast, your choice of flavour. Served with baby potatoes, grilled vegetables, garlic dip, pickles and Arabic bread.","descAr":"قطعتان من صدر الدجاج المشوي بنكهة من اختيارك. يُقدَّم مع بطاطا صغيرة، خضار مشوية، صوص ثوم، مخلل وخبز عربي.","tags":[],"flavours":true},
+        {"name":"JJ Breast Platter","nameAr":"طبق صدر جي جي","desc":"Two pieces of grilled chicken breast, your choice of flavour. Served with your choice of side, garlic dip, pickles and Arabic bread.","descAr":"قطعتان من صدر الدجاج المشوي بنكهة من اختيارك. يُقدَّم مع طبق جانبي من اختيارك، صوص ثوم، مخلل وخبز عربي.","tags":[],"flavours":true},
+        {"name":"JJ W Rez","nameAr":"طبق جي جي ورز","desc":"JJ savoury rice mixed with minced beef and nuts, topped with grilled chicken breast. Served with yogurt.","descAr":"رز ج ج المتبّل مع لحم مفروم ومكسرات، مع صدر دجاج مشوي فوقه. يُقدَّم مع لبن.","tags":["sig"],"flavours":false}
+      ]
+    },
+    {
+      "id": "bowls", "name": "JJ Bowls", "nameAr": "أطباق جي جي",
+      "blurb": "",
+      "blurbAr": "",
+      "items": [
+        {"name":"JJ Healthy Bowl","nameAr":"طبق جي جي هيلثي","desc":"Grilled chicken breast over white rice with grilled vegetable skewers, sweet corn and cherry tomatoes. Topped with cheddar and tortilla bread, served with creamy BBQ sauce.","descAr":"صدر دجاج مشوي فوق رز أبيض مع خضار مشوية، ذرة وطماطم كرزية. مع جبنة شيدر وخبز تورتيلا مقلي، ويُقدَّم مع صلصة باربيكيو كريمي.","tags":["sig"],"flavours":false},
+        {"name":"JJ Crunch Bowl","nameAr":"طبق جي جي كرانشي","desc":"Crispy fried chicken tenders in sesame teriyaki glaze over white rice, with grilled broccoli, green capsicum, shredded iceberg, sweet corn, cherry tomatoes and jalapeños.","descAr":"قطع دجاج مقلية مغطاة بصلصةترياكي السمسم فوق رز أبيض، مع بروكلي مشوي، فليفلة خضراء، خس مبروش، ذرة، طماطم كرزية وهالابينو.","tags":[],"flavours":false},
+        {"name":"JJ Smoky Bowl","nameAr":"طبق جي جي سموكي","desc":"Grilled chicken breast over white rice with green capsicum, fava beans, shredded iceberg, sweet corn, cherry tomatoes, avocado and jalapeños. Served with smoky chipotle sauce.","descAr":"صدر دجاج مشوي فوق رز أبيض مع فليفلة خضراء، فول، خس مبروش، ذرة، طماطم كرزية، أفوكادو وهالابينو. يُقدَّم مع صلصة تشيبوتلي سموكي.","tags":[],"flavours":false},
+        {"name":"JJ Shawarma Bowl","nameAr":"طبق جي جي شاورما","desc":"Chicken shawarma over basmati rice with diced tomatoes and shredded iceberg. Garnished with biwas and ranch sauce.","descAr":"شاورما دجاج مع رز بسمتي، طماطم مقطعة وخس مبروش. تُزيَّن بالبيواز وصلصة رانش.","tags":["best"],"flavours":false}
+      ]
+    },
+    {
+      "id": "shawarma", "name": "Chicken Shawarma", "nameAr": "شاورما الدجاج",
+      "blurb": "",
+      "blurbAr": "",
+      "items": [
+        {"name":"Shawarma Rolls","nameAr":"شاورما رولز","desc":"Two chicken shawarma sandwiches rolled and cut into eight pieces, garnished with garlic, pickles and biwas. Served with fries.","descAr":"سندويشان شاورما دجاج ملفوفان ومقطعان إلى ٨ قطع، مزيّنان بالثوم والمخلل والبيواز. يُقدَّمان مع بطاطا مقلية.","tags":["best"],"flavours":false},
+        {"name":"Shawarma Platter","nameAr":"صحن شاورما","desc":"Chicken shawarma with french fries, pickles, garlic and Arabic bread.","descAr":"شاورما دجاج مع بطاطا مقلية، مخلل، ثوم وخبز عربي.","tags":[],"flavours":false},
+        {"name":"Hummus Shawarma","nameAr":"شاورما بالحمص","desc":"Chicken shawarma slices served over hummus with Arabic bread.","descAr":"شرائح شاورما دجاج تُقدَّم فوق الحمص مع خبز عربي.","tags":["sig"],"flavours":false},
+        {"name":"Shawarma Sandwich","nameAr":"سندويش شاورما","desc":"Chicken shawarma with pickles and garlic sauce, wrapped in Arabic or saj bread. Regular or large.","descAr":"شاورما دجاج مع مخلل وصلصة ثوم، ملفوفة بخبز عربي أو خبز صاج. عادي أو كبير.","tags":[],"flavours":false},
+        {"name":"Saj Shawarma Sandwich","nameAr":"سندويش شاورما صاج","desc":"Chicken shawarma with pickles and garlic sauce, wrapped in saj bread.","descAr":"شاورما دجاج مع مخلل وصلصة ثوم، ملفوفة بخبز صاج.","tags":[],"flavours":false}
+      ]
+    },
+    {
+      "id": "wings", "name": "Wings", "nameAr": "الأجنحة",
+      "blurb": "Wing it your way and drown 'em in sauce.",
+      "blurbAr": "اختر أجنحتك بطريقتك، وأغرقها بالصوص.",
+      "items": [
+        {"name":"JJ Grilled Wings","nameAr":"جوانح مشوية","desc":"Charcoal grilled chicken wings, tossed in your choice of sauce. Six pieces.","descAr":"أجنحة دجاج مشوية على الفحم، متبّلة بصوص من اختيارك. ٦ قطع.","tags":["sig"],"flavours":false,"wingSauces":true},
+        {"name":"JJ Fried Wings","nameAr":"جوانح مقلية","desc":"Crispy fried chicken wings, tossed in your choice of sauce. Six pieces.","descAr":"أجنحة دجاج مقلية مقرمشة، متبّلة بصوص من اختيارك. ٦ قطع.","tags":[],"flavours":false,"wingSauces":true}
+      ]
+    },
+    {
+      "id": "burgers", "name": "Burgers", "nameAr": "البرغر",
+      "blurb": "Loaded, sauced and stacked the way it should be. No shortcuts.",
+      "blurbAr": "محشو، مغطى بالصوص ومرصوص كما يجب. بدون اختصارات.",
+      "items": [
+        {"name":"Signature Grilled Chicken","nameAr":"دجاج مشوي","desc":"JJ grilled chicken breast with garlic sauce, herb sauce, iceberg and pickles.","descAr":"صدر دجاج مشوي مع صلصة ثوم، صلصة أعشاب، خس ومخلل.","tags":["sig"],"flavours":false},
+        {"name":"Crunchy Cheesy Chicken","nameAr":"كرسبي بالدجاج والجبنة","desc":"Grilled chicken breast and a crispy fried mozzarella patty with creamy BBQ, ranch, shredded iceberg and pickled jalapeños.","descAr":"صدر دجاج مشوي مع باتيه موزاريلا مقلي مقرمش، صلصة باربيكيو كريمي، صلصة رانش، خس مبروش وهالابينو.","tags":["best"],"flavours":false},
+        {"name":"Buffalo Chicken","nameAr":"بافالو دجاج","desc":"Double-cheesed crispy chicken marinated in buffalo sauce, loaded with cheddar, jalapeños and our special ranch.","descAr":"دجاج كرسبي بطبقتين من الجبنة متبّل بصلصة بافالو، مع جبنة شيدر، هالابينو وصلصة الرانش الخاصة.","tags":[],"flavours":false},
+        {"name":"Cheesy Chicken","nameAr":"دجاج بالجبنة","desc":"Breaded chicken breast stuffed with mozzarella, with JJ cocktail sauce, lettuce, pickles and cheddar.","descAr":"صدر دجاج مغطى بالفتات محشو بجبنة موزاريلا، مع صلصة كوكتيل ج ج، خس، مخلل وجبنة شيدر.","tags":[],"flavours":false},
+        {"name":"Lebanese Burger","nameAr":"برغر لبناني","desc":"Grilled beef patty with mayonnaise, coleslaw, ketchup, fries and pickles.","descAr":"باتيه لحم بقري مشوي مع مايونيز، كولسلو، كاتشب، بطاطا مقلية ومخلل.","tags":[],"flavours":false},
+        {"name":"Crunchy Cheesy Beef","nameAr":"كرسبي باللحم والجبنة","desc":"Grilled beef patty stacked with a crispy fried mozzarella patty, creamy BBQ, ranch, shredded iceberg and pickled jalapeños.","descAr":"باتيه لحم بقري مشوي مع باتيه موزاريلا مقلي مقرمش، صلصة باربيكيو كريمي، صلصة رانش، خس مبروش وهالابينو.","tags":[],"flavours":false}
+      ]
+    },
+    {
+      "id": "sandwiches", "name": "Sandwiches & Wraps", "nameAr": "السندويشات واللفائف",
+      "blurb": "Real chicken. Real ingredients. Real satisfaction.",
+      "blurbAr": "دجاج حقيقي. مكوّنات حقيقية. رضا حقيقي.",
+      "items": [
+        {"name":"JJ Chicken Sandwich","nameAr":"سندويش دجاج","desc":"Pulled roasted chicken, garlic sauce and pickles. Wrapped in Arabic or submarine bread.","descAr":"دجاج مشوي مسحب مع صلصة ثوم ومخلل. ملفوف بخبز عربي أو خبز سندويش.","tags":["sig"],"flavours":false},
+        {"name":"JJ Tawouk Sandwich","nameAr":"سندويش طاووق","desc":"Grilled marinated chicken tawouk with garlic sauce and pickles. Served in Arabic bread.","descAr":"طاووق دجاج متبّل مشوي مع صلصة ثوم ومخلل. ملفوف بخبز عربي.","tags":["best"],"flavours":false},
+        {"name":"Lebanese Tawouk Sandwich","nameAr":"سندويش طاووق لبناني","desc":"Grilled marinated tawouk with garlic sauce, coleslaw, fries, ketchup and pickles. Served in Arabic bread.","descAr":"طاووق متبّل مشوي مع صلصة ثوم، كولسلو، بطاطا مقلية، كاتشب ومخلل. ملفوف بخبز عربي.","tags":[],"flavours":false},
+        {"name":"Lebanese Kafta Sandwich","nameAr":"سندويش كفتة لبناني","desc":"Charcoal grilled kafta with hummus, parsley mix, tomato and pickles. Served in Arabic bread.","descAr":"كفتة مشوية على الفحم مع حمص، بيواز، طماطم ومخلل. ملفوفة بخبز عربي.","tags":[],"flavours":false},
+        {"name":"Lamb Tikka Sandwich","nameAr":"سندويش تكا","desc":"Charcoal grilled marinated lamb tikka with hummus, parsley mix, grilled onions and tomato. Served in Arabic bread.","descAr":"تكا لحم مشوية على الفحم مع حمص، بيواز، بصل مشوي وطماطم. ملفوفة بخبز عربي.","tags":[],"flavours":false},
+        {"name":"Chicken Avocado Wrap","nameAr":"لفة الدجاج بالأفوكادو","desc":"Grilled chicken breast with avocado, spicy and herb sauces, kidney beans, tomato and spring onions. Served in a tortilla wrap.","descAr":"صدر دجاج مشوي مع أفوكادو، صلصة حارة، صلصة أعشاب، فاصوليا حمراء، طماطم وبصل أخضر. ملفوف بخبز تورتيلا.","tags":[],"flavours":false}
+      ]
+    },
+    {
+      "id": "subs", "name": "Submarines", "nameAr": "السندويشات الطويلة",
+      "blurb": "",
+      "blurbAr": "",
+      "items": [
+        {"name":"Grilled Halloumi Sub","nameAr":"سندويش حلوم مشوي","desc":"Pulled charcoal grilled chicken, grilled halloumi, tomato, pickles and garlic sauce in toasted submarine bread.","descAr":"دجاج مشوي على الفحم مسحب مع جبنة حلوم مشوية، طماطم، مخلل وصلصة ثوم بخبز سندويش محمّص.","tags":["sig"],"flavours":false},
+        {"name":"Grilled Chicken Sub","nameAr":"سندويش دجاج مشوي","desc":"Pulled grilled chicken with cheddar, lettuce, tomato, corn and pickles in toasted submarine bread.","descAr":"دجاج مشوي مسحب مع جبنة شيدر، خس، طماطم، ذرة ومخلل بخبز سندويش محمّص.","tags":[],"flavours":false},
+        {"name":"Chicken Fajita Sub","nameAr":"سندويش فاهيتا دجاج","desc":"Spicy chicken fajita with sautéed peppers, onion, mixed cheese, iceberg and dual sauces in toasted submarine bread.","descAr":"فاهيتا دجاج حارة مع فليفلة وبصل سوتيه، جبنة مشكلة، خس وصلصتين بخبز سندويش محمّص.","tags":[],"flavours":false},
+        {"name":"Crispy Chicken Sub","nameAr":"سندويش دجاج كرسبي","desc":"Breaded chicken tenders with garlic sauce, ketchup, lettuce, tomato and pickles in toasted submarine bread.","descAr":"قطع دجاج مغطاة بالفتات مع صلصة ثوم، كاتشب، خس، طماطم ومخلل بخبز سندويش محمّص.","tags":[],"flavours":false},
+        {"name":"Francisco Sub","nameAr":"سندويش فرانسيسكو","desc":"Sautéed chicken, mayo, corn, iceberg lettuce and mixed cheese in toasted submarine bread.","descAr":"دجاج سوتيه مع مايونيز، ذرة، خس وجبنة مشكلة بخبز سندويش محمّص.","tags":[],"flavours":false}
+      ]
+    },
+    {
+      "id": "starters", "name": "Signature Starters", "nameAr": "المقبّلات المميّزة",
+      "blurb": "",
+      "blurbAr": "",
+      "items": [
+        {"name":"Messy Fries","nameAr":"بطاطا ميسي","desc":"Crispy golden seasoned fries topped with breaded chicken bites, jalapeños, fried onion slices and cheddar cheese sauce.","descAr":"بطاطا مقلية مقرمشة بالتوابل مع قطع دجاج مغطاة بالفتات، هالابينو، شرائح بصل مقلي وصلصة جبنة شيدر.","tags":["sig","best"],"flavours":false},
+        {"name":"Crispy Tenders","nameAr":"أصابع دجاج مقرمشة","desc":"Breaded chicken tenders, served with your choice of dip.","descAr":"أصابع دجاج مغطاة بالفتات، تُقدَّم مع صوص من اختيارك.","tags":[],"flavours":false},
+        {"name":"Mozzarella Sticks","nameAr":"أعواد موتزاريلا المقلية","desc":"Served with your choice of dip.","descAr":"تُقدَّم مع صوص من اختيارك.","tags":[],"flavours":false},
+        {"name":"Cheese Rolls","nameAr":"لفائف الجبنة المقلية","desc":"","descAr":"","tags":[],"flavours":false},
+        {"name":"Hummus Shawarma","nameAr":"حمص شاورما","desc":"","descAr":"","tags":[],"flavours":false},
+        {"name":"Hummus","nameAr":"حمص","desc":"","descAr":"","tags":[],"flavours":false},
+        {"name":"Moutabbal","nameAr":"متبّل الباذنجان","desc":"","descAr":"","tags":[],"flavours":false},
+        {"name":"Lentil Soup","nameAr":"شوربة العدس","desc":"","descAr":"","tags":[],"flavours":false},
+        {"name":"Twister Fries","nameAr":"بطاطا تويستر","desc":"","descAr":"","tags":[],"flavours":false},
+        {"name":"French Fries","nameAr":"بطاطا مقلية","desc":"","descAr":"","tags":[],"flavours":false}
+      ]
+    },
+    {
+      "id": "salads", "name": "Fresh Salads", "nameAr": "السلطات الطازجة",
+      "blurb": "",
+      "blurbAr": "",
+      "items": [
+        {"name":"Chicken Avocado Salad","nameAr":"سلطة دجاج بالأفوكادو","desc":"Fresh romaine lettuce, rocca, corn, red capsicum and avocado, topped with our specialty grilled chicken breast. Served with lemon oil dressing.","descAr":"خس روماني طازج، جرجير، ذرة، فليفلة حمراء وأفوكادو، فوقها صدر دجاج مشوي مميّز. تُقدَّم مع صلصة زيت وليمون.","tags":["sig"],"flavours":false},
+        {"name":"Chicken Caesar Salad","nameAr":"سلطة دجاج سيزر","desc":"Fresh romaine lettuce and cherry tomato, topped with grilled chicken breast, parmesan and croutons. Served with JJ Caesar dressing.","descAr":"خس روماني طازج وطماطم كرزية، فوقها دجاج مشوي، جبنة بارميزان وخبز محمّص. تُقدَّم مع صلصة سيزر ج ج.","tags":[],"flavours":false},
+        {"name":"Fattoush","nameAr":"فتّوش","desc":"Fresh romaine lettuce, tomato, cucumber, fresh mint, radish, onions, green capsicum and fried pita. Served with JJ Fattoush dressing.","descAr":"خس روماني طازج، طماطم، خيار، نعناع طازج، فجل، بصل، فليفلة خضراء وخبز بيتا مقلي. يُقدَّم مع صلصة فتّوش.","tags":[],"flavours":false},
+        {"name":"Tabbouleh","nameAr":"تبّولة","desc":"Freshly chopped parsley, burghul, tomatoes and sweet peppery onions. Served with lemon oil dressing.","descAr":"بقدونس مفروم طازج، برغل، طماطم وبصل أخضر حار. تُقدَّم مع صلصة زيت وليمون.","tags":[],"flavours":false}
+      ]
+    },
+    {
+      "id": "sides", "name": "Sides", "nameAr": "الأطباق الجانبية",
+      "blurb": "",
+      "blurbAr": "",
+      "items": [
+        {"name":"Grilled Baby Potato","nameAr":"بطاطا صغيرة مشوية","desc":"","descAr":"","tags":[],"flavours":false},
+        {"name":"Grilled Corn On The Cob","nameAr":"عرنوس ذرة مشوي","desc":"","descAr":"","tags":[],"flavours":false},
+        {"name":"Grilled Halloumi","nameAr":"جبنة حلوم مشوية","desc":"","descAr":"","tags":[],"flavours":false},
+        {"name":"Grilled Vegetables","nameAr":"خضار مشوية","desc":"","descAr":"","tags":[],"flavours":false},
+        {"name":"White Rice","nameAr":"أرز أبيض","desc":"","descAr":"","tags":[],"flavours":false},
+        {"name":"Coleslaw","nameAr":"سلطة الكرنب","desc":"","descAr":"","tags":[],"flavours":false}
+      ]
+    },
+    {
+      "id": "combos", "name": "Combo Meals", "nameAr": "وجبات الكومبو",
+      "blurb": "",
+      "blurbAr": "",
+      "items": [
+        {"name":"JJ Platter Meal","nameAr":"كومبو طبق جي جي","desc":"Your choice from JJ specialty platters, with a side and a soft drink.","descAr":"طبقك المفضّل من أطباق ج ج المميّزة، مع طبق جانبي ومشروب غازي.","tags":["best"],"flavours":false},
+        {"name":"Mixed Grill Combo","nameAr":"كومبو مشاوي مشكّلة","desc":"Mixed grill platter with your choice of side and a soft drink.","descAr":"طبق مشاوي مشكّلة مع طبق جانبي من اختيارك ومشروب غازي.","tags":[],"flavours":false},
+        {"name":"Sandwich Combo","nameAr":"كومبو سندويش","desc":"Your choice of a shawarma or tawouk sandwich with fries and a soft drink.","descAr":"سندويش شاورما أو طاووق من اختيارك مع بطاطا مقلية ومشروب غازي.","tags":[],"flavours":false},
+        {"name":"Burger Combo","nameAr":"كومبو البرغر","desc":"Your choice of grilled chicken or beef burger with fries and a soft drink.","descAr":"برغر دجاج مشوي أو لحم بقري من اختيارك مع بطاطا مقلية ومشروب غازي.","tags":[],"flavours":false}
+      ]
+    },
+    {
+      "id": "kids", "name": "Kids Meals", "nameAr": "وجبات الأطفال",
+      "blurb": "",
+      "blurbAr": "",
+      "items": [
+        {"name":"Kids Chicken Nuggets Meal","nameAr":"وجبة أطفال ناغتس","desc":"Six pieces of nuggets, served with fries and a juice or water.","descAr":"٦ قطع ناغتس، تُقدَّم مع بطاطا مقلية وعصير أو مياه.","tags":[],"flavours":false},
+        {"name":"Kids Tenders Meal","nameAr":"وجبة أطفال تندرز","desc":"Three pieces of breaded chicken tenders, served with fries and a juice or water.","descAr":"٣ قطع تندرز دجاج مغطاة بالفتات، تُقدَّم مع بطاطا مقلية وعصير أو مياه.","tags":[],"flavours":false},
+        {"name":"Kids Chicken Burger Meal","nameAr":"وجبة أطفال برغر دجاج","desc":"Crispy breaded chicken patty with cheese on a soft bun, served with fries and a juice or water.","descAr":"شريحة دجاج مقرمشة مع جبنة على خبز طري، تُقدَّم مع بطاطا مقلية وعصير أو مياه.","tags":[],"flavours":false}
+      ]
+    },
+    {
+      "id": "desserts", "name": "Desserts", "nameAr": "الحلويات",
+      "blurb": "",
+      "blurbAr": "",
+      "items": [
+        {"name":"Lazy Cake","nameAr":"ليزي كايك","desc":"","descAr":"","tags":[],"flavours":false},
+        {"name":"Oreo Chocolate Custard","nameAr":"كاسترد أوريو بالشوكولاتة","desc":"","descAr":"","tags":[],"flavours":false},
+        {"name":"Rice Pudding","nameAr":"رز بالحليب","desc":"","descAr":"","tags":[],"flavours":false},
+        {"name":"Mouhalabiya","nameAr":"المهلبية","desc":"","descAr":"","tags":[],"flavours":false}
+      ]
+    },
+    {
+      "id": "drinks", "name": "Drinks", "nameAr": "المشروبات",
+      "blurb": "",
+      "blurbAr": "",
+      "items": [
+        {"name":"Fresh Juice","nameAr":"عصير طازج","desc":"Orange or lemonade.","descAr":"برتقال أو ليمونادة.","tags":[],"flavours":false},
+        {"name":"Laban Ayran","nameAr":"لبن عيران","desc":"Zero, mint or original.","descAr":"صفر، نعناع أو أصلي.","tags":[],"flavours":false},
+        {"name":"Soft Drink","nameAr":"مشروب غازي","desc":"","descAr":"","tags":[],"flavours":false},
+        {"name":"Sparkling Water","nameAr":"مياه غازية","desc":"","descAr":"","tags":[],"flavours":false},
+        {"name":"Mineral Water","nameAr":"مياه معدنية","desc":"","descAr":"","tags":[],"flavours":false},
+        {"name":"Red Bull","nameAr":"ريد بول","desc":"","descAr":"","tags":[],"flavours":false}
+      ]
+    }
+  ],
+  "flavours": [
+    {"name":"JJ Original","nameAr":"أوريجينال"},
+    {"name":"Spicy","nameAr":"حار"},
+    {"name":"Herbal","nameAr":"أعشاب"}
+  ],
+  "wingSauces": [
+    {"name":"Dynamite","nameAr":"ديناميت"},
+    {"name":"Buffalo","nameAr":"بافالو"},
+    {"name":"Garlic Coriander","nameAr":"ثوم وكزبرة"}
+  ],
+  "sauces": ["Garlic Dip","Buffalo Sauce","BBQ Sauce","Lemon Herb","Dynamite Sauce","Cheddar Cheese","Herb Sauce","Ranch Sauce","Chipotle Sauce","Honey Mustard","Sesame Teriyaki","Creamy BBQ","Garlic Herb Sauce","Spicy Dip","Cocktail Sauce","Mayonnaise","Ketchup","JJ Specialty Sauce"]
+}
+;
+const MARKS = {
+ "_source": "Brand mark set supplied by Almed. Black disc, gold star, gold rule, ruled dots.",
+ "marks": [
+  {
+   "id": "hormone-free",
+   "l1": "Hormone",
+   "l2": "Free",
+   "l1Ar": "خالٍ من",
+   "l2Ar": "الهرمونات"
+  },
+  {
+   "id": "grain-fed",
+   "l1": "Grain",
+   "l2": "Fed",
+   "l1Ar": "مغذّى",
+   "l2Ar": "بالحبوب"
+  },
+  {
+   "id": "halal",
+   "l1": "Halal",
+   "l2": "",
+   "l1Ar": "حلال",
+   "l2Ar": ""
+  },
+  {
+   "id": "charcoal-grilled",
+   "l1": "Charcoal",
+   "l2": "Grilled",
+   "l1Ar": "مشوي",
+   "l2Ar": "على الفحم"
+  },
+  {
+   "id": "freshly-prepared",
+   "l1": "Freshly",
+   "l2": "Prepared",
+   "l1Ar": "يُحضَّر",
+   "l2Ar": "طازجاً"
+  }
+ ]
+};
+/* JJ CHICKEN — shared behaviour
+   Language: real RTL. document.dir flips, layout mirrors via CSS logical properties.
+   Data: branches.json + menu.json are the single source of truth. Swap the fetch
+   for a CMS or ChatFood feed later without touching markup. */
+
+const ORDER_URL = 'https://order.jjchicken.com';
+const CALL_CENTRE = '600545554';
+const WHATSAPP = ''; // TODO: confirm official WhatsApp number with Almed
+
+/* ---------- marquee (brand asset — the five quality marks) ---------- */
+const MARQUEE_EN = ['HORMONE FREE','GRAIN FED','HALAL','CHARCOAL GRILLED','FRESHLY PREPARED'];
+const MARQUEE_AR = ['خالٍ من الهرمونات','مغذّى بالحبوب','حلال','مشوي على الفحم','يُحضَّر طازجاً'];
+
+function initMarquee(){
+  const mq = document.getElementById('mq');
+  if(!mq) return;
+  const ar = document.documentElement.lang === 'ar';
+  const words = ar ? MARQUEE_AR : MARQUEE_EN;
+  let run = '';
+  for(let i = 0; i < 4; i++)
+    run += words.map(w => `<span>${w}<i> ★ </i></span>`).join('');
+  mq.innerHTML = run + run;
+}
+
+/* ---------- quality marks ---------- */
+async function initMarks(){
+  const wrap = document.getElementById('marks');
+  if(!wrap) return;
+  const data = MARKS;
+  wrap.innerHTML = data.marks.map(m => `
+    <div class="mark-badge" data-id="${m.id}">
+      <span class="mb-star">★</span>
+      <span class="mb-text">
+        <span class="en">${m.l1}${m.l2 ? '<br>' + m.l2 : ''}</span>
+        <span class="ar">${m.l1Ar}${m.l2Ar ? '<br>' + m.l2Ar : ''}</span>
+      </span>
+      <span class="mb-rule"></span>
+      <span class="mb-dots">·····</span>
+    </div>`).join('');
+}
+
+/* ---------- language ---------- */
+function initLang(){
+  const btn = document.getElementById('langBtn');
+  if(!btn) return;
+  const saved = localStorage.getItem('jj-lang') || 'en';
+  apply(saved);
+  btn.onclick = () => apply(document.documentElement.lang === 'ar' ? 'en' : 'ar');
+
+  function apply(lang){
+    const ar = lang === 'ar';
+    document.body.dir = ar ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang;
+    btn.textContent = ar ? 'EN' : 'عربي';
+    localStorage.setItem('jj-lang', lang);
+    initMarquee();
+  }
+}
+
+/* ---------- sidebar drawer ---------- */
+function initDrawer(){
+  const burger = document.getElementById('burger');
+  const drawer = document.getElementById('drawer');
+  const scrim  = document.getElementById('scrim');
+  const close  = document.getElementById('drawerClose');
+  if(!burger || !drawer) return;
+
+  const open  = () => { drawer.classList.add('show'); scrim.classList.add('show'); burger.classList.add('open'); document.body.classList.add('locked'); };
+  const shut  = () => { drawer.classList.remove('show'); scrim.classList.remove('show'); burger.classList.remove('open'); document.body.classList.remove('locked'); };
+
+  burger.onclick = () => drawer.classList.contains('show') ? shut() : open();
+  scrim.onclick = shut;
+  if(close) close.onclick = shut;
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') shut(); });
+}
+
+/* ---------- sauces (old site: "all sauces freshly homemade, no preservatives") ---------- */
+async function initSauces(){
+  const wrap = document.getElementById('sauceCloud');
+  if(!wrap) return;
+  const data = MENU;
+  const hot = ['Buffalo Sauce','Dynamite Sauce','Spicy Dip','Chipotle Sauce'];
+  wrap.innerHTML = data.sauces.map(s =>
+    `<span class="sauce${hot.includes(s) ? ' hot' : ''}">${s}</span>`).join('');
+}
+
+/* ---------- branches ---------- */
+async function initBranches(){
+  const grid = document.getElementById('locGrid');
+  if(!grid) return;
+  const branches = BRANCHES;
+
+  const render = city => {
+    const list = city === 'all' ? branches : branches.filter(b => b.city === city);
+    grid.innerHTML = list.map(b => b.soon ? `
+      <div class="loc soon">
+        <div class="loc-city"><span class="en">${b.city}</span><span class="ar">${b.cityAr}</span></div>
+        <div class="loc-name"><span class="en">${b.name}</span><span class="ar">${b.nameAr}</span></div>
+        <div class="loc-addr"><span class="en">${b.addr}</span><span class="ar">${b.addrAr}</span></div>
+        <div class="loc-acts"><span class="loc-act soon-tag"><span class="en">Opening soon</span><span class="ar">قريباً</span></span></div>
+      </div>` : `
+      <div class="loc">
+        <div class="loc-city"><span class="en">${b.city}</span><span class="ar">${b.cityAr}</span></div>
+        <div class="loc-name"><span class="en">${b.name}</span><span class="ar">${b.nameAr}</span></div>
+        <div class="loc-addr"><span class="en">${b.addr}</span><span class="ar">${b.addrAr}</span></div>
+        <div class="loc-acts">
+          <a href="${ORDER_URL}" target="_blank" rel="noopener" class="loc-act pri"><span class="en">Order</span><span class="ar">اطلب</span></a>
+          <a href="tel:${b.tel.replace(/\s/g,'')}" class="loc-act">${b.tel}</a>
+          <a href="${b.map}" target="_blank" rel="noopener" class="loc-act"><span class="en">Directions</span><span class="ar">الاتجاهات</span></a>
+          <a href="locations/${b.name.toLowerCase().replace(/ /g,'-')}.html" class="loc-act"><span class="en">Branch page</span><span class="ar">صفحة الفرع</span></a>
+        </div>
+      </div>`).join('');
+    const count = document.getElementById('locCount');
+    if(count) count.innerHTML =
+      `<span class="en">Showing ${list.length} of ${branches.length} branches</span><span class="ar">عرض ${list.length} من ${branches.length} فرعاً</span>`;
+  };
+
+  render('all');
+  document.querySelectorAll('#locFilters .chip').forEach(c => {
+    c.onclick = () => {
+      document.querySelectorAll('#locFilters .chip').forEach(x => x.classList.remove('on'));
+      c.classList.add('on');
+      render(c.dataset.city);
+    };
+  });
+}
+
+/* ---------- menu ---------- */
+async function initMenu(){
+  const wrap = document.getElementById('menuWrap');
+  if(!wrap) return;
+  const data = MENU;
+  const cats = data.categories.filter(c => c.items.length);
+
+  const filters = document.getElementById('menuFilters');
+  if(filters){
+    filters.innerHTML = `<button class="chip on" data-cat="all"><span class="en">All</span><span class="ar">الكل</span></button>` +
+      cats.map(c => `<button class="chip" data-cat="${c.id}"><span class="en">${c.name}</span><span class="ar">${c.nameAr}</span></button>`).join('');
+  }
+
+  const chips = arr => arr.map(x =>
+    `<span class="mar"><span class="en">${x.name}</span><span class="ar">${x.nameAr}</span></span>`).join('');
+  const flavourChips = chips(data.flavours);
+  const wingChips    = chips(data.wingSauces);
+
+  const render = catId => {
+    const list = catId === 'all' ? cats : cats.filter(c => c.id === catId);
+    wrap.innerHTML = list.map(c => `
+      <section class="cat">
+        <h2 class="cat-title"><span class="en">${c.name}</span><span class="ar">${c.nameAr}</span></h2>
+        <div class="cat-ar">${c.nameAr}</div>
+        ${c.blurb ? `<p class="cat-blurb"><span class="en">${c.blurb}</span><span class="ar">${c.blurbAr}</span></p>` : ''}
+        <div class="items">
+          ${c.items.map(i => `
+            <article class="item">
+              <h3 class="item-name"><span class="en">${i.name}</span><span class="ar">${i.nameAr}</span></h3>
+              <div class="item-ar">${i.nameAr}</div>
+              ${i.desc ? `<p class="item-desc"><span class="en">${i.desc}</span><span class="ar">${i.descAr}</span></p>` : ''}
+              ${i.tags.length ? `<div class="item-tags">${i.tags.map(t =>
+                `<span class="tag ${t}"><span class="en">${t === 'sig' ? 'Signature' : 'Best seller'}</span><span class="ar">${t === 'sig' ? 'مميّز' : 'الأكثر مبيعاً'}</span></span>`).join('')}</div>` : ''}
+              ${i.flavours ? `<div class="mars">${flavourChips}</div>` : ''}
+              ${i.wingSauces ? `<div class="mars">${wingChips}</div>` : ''}
+            </article>`).join('')}
+        </div>
+      </section>`).join('');
+  };
+
+  render('all');
+  document.querySelectorAll('#menuFilters .chip').forEach(c => {
+    c.onclick = () => {
+      document.querySelectorAll('#menuFilters .chip').forEach(x => x.classList.remove('on'));
+      c.classList.add('on');
+      render(c.dataset.cat);
+      window.scrollTo({top: wrap.offsetTop - 120, behavior: 'smooth'});
+    };
+  });
+}
+
+/* ---------- branch map — every branch, not one ---------- */
+let _map = null;
+
+async function initMap(){
+  const el = document.getElementById('map');
+  if(!el || typeof L === 'undefined') return;
+
+  // a hidden container has no dimensions, so Leaflet renders blank.
+  // wait until it is actually on screen, then size it.
+  if(el.offsetParent === null || el.clientHeight === 0){
+    if(_map) return;
+    return void setTimeout(initMap, 150);
+  }
+
+  if(_map){ _map.invalidateSize(); return; }
+
+  const branches = (typeof BRANCHES !== 'undefined')
+    ? BRANCHES
+    : await fetch('assets/data/branches.json').then(r => r.json());
+  const pinned = branches.filter(b => b.lat && b.lng);
+  if(!pinned.length) return;
+
+  _map = L.map(el, {scrollWheelZoom:false}).setView([25.05, 55.2], 8);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution:'&copy; OpenStreetMap &copy; CARTO', maxZoom:19
+  }).addTo(_map);
+
+  const icon = L.divIcon({
+    className:'jj-pin', iconSize:[32,32], iconAnchor:[16,16], popupAnchor:[0,-15],
+    html:'<span>JJ</span>'
+  });
+
+  const pts = [];
+  pinned.forEach(b => {
+    L.marker([b.lat, b.lng], {icon, title:`JJ Chicken — ${b.name}`})
+     .addTo(_map)
+     .bindPopup(
+       `<strong>${b.name}</strong><span>${b.addr}</span>` +
+       `<a href="${b.map}" target="_blank" rel="noopener">Directions</a>` +
+       `<a href="tel:${b.tel.replace(/\s/g,'')}">${b.tel}</a>`);
+    pts.push([b.lat, b.lng]);
+  });
+  _map.fitBounds(pts, {padding:[44,44]});
+  setTimeout(() => _map.invalidateSize(), 120);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initMap();
+  initMarquee();
+  initLang();
+  initDrawer();
+  initMarks();
+  initSauces();
+  initBranches();
+  initMenu();
+});
+
+
+function go(name){
+  document.querySelectorAll('.page').forEach(p => p.hidden = true);
+  const el = document.getElementById('page-' + name);
+  if(el) el.hidden = false;
+  document.querySelectorAll('.drawer-nav a').forEach(a => a.removeAttribute('aria-current'));
+  const link = document.querySelector(`.drawer-nav a[href="#/${name}"]`);
+  if(link) link.setAttribute('aria-current','page');
+  window.scrollTo(0,0);
+  initMarks(); initSauces(); initBranches(); initMenu(); initMarquee();
+  requestAnimationFrame(() => initMap());
+  document.getElementById('drawer').classList.remove('show');
+  document.getElementById('scrim').classList.remove('show');
+  document.getElementById('burger').classList.remove('open');
+  document.body.classList.remove('locked');
+}
+function fromHash(){
+  const n = (location.hash.replace('#/','') || 'index');
+  go(['index','menu','locations','franchise'].includes(n) ? n : 'index');
+}
+window.addEventListener('hashchange', fromHash);
+window.addEventListener('DOMContentLoaded', fromHash);
+</script>
+</body>
+</html>

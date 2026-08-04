@@ -64,7 +64,7 @@
 
 ## Known issues
 
-- Arabic strings are Claude-authored and unreviewed. Do not ship to client
+- Arabic strings are agency-drafted and unreviewed. Do not ship to client
   without a native Gulf reviewer.
 - `menu.json` Wings and Salads categories are empty; they are filtered out of the
   render rather than shown as empty sections.

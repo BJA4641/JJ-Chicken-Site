@@ -33,11 +33,13 @@ franchise.html      Three models, support, criteria, process
 assets/css/site.css Single stylesheet
 assets/js/site.js   Drawer, language, marquee, rendering
 assets/data/        branches.json + menu.json — edit these, not the HTML
-CLAUDE.md           Read first if you are Claude Code
+AGENTS.md           Read first — project brief and house rules
 STATE.md            Where the build stands
 docs/MEMORY.md      Settled decisions and client context
 docs/ROADMAP.md     What comes next
 docs/SOURCES.md     Where every fact came from
+docs/SEO.md         Search strategy, competitor targeting, keyword tiers
+docs/GIT-WORKFLOW.md  Auth for private repos, daily loop, merge/conflict handling
 ```
 
 ## Editing content
@@ -47,5 +49,5 @@ Every user-facing string needs both an `.en` and an `.ar` span.
 
 ## Before shipping to the client
 
-Arabic in this repo was written by Claude and has **not** been reviewed by a
+Arabic in this repo is agency-drafted and has **not** been reviewed by a
 native Gulf speaker. That review is blocking.

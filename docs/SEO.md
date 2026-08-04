@@ -73,7 +73,7 @@ Own the search for JJ's own name:
 ### Priority 4 — Arabic ✅ foundation built
 `hreflang` en-AE / ar-AE / x-default on every page and in the sitemap.
 Every string genuinely bilingual with real RTL.
-**Blocking:** the Arabic in this build was written by Claude and needs a native
+**Blocking:** the Arabic in this build is agency-drafted and needs a native
 Gulf reviewer before launch. Arabic keyword research has not been done yet and
 should be, because it is the cheapest win available.
 
