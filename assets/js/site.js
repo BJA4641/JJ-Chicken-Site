@@ -166,11 +166,13 @@ async function initMenu(){
   };
 
   render('all');
+  initReveal();
   document.querySelectorAll('#menuFilters .chip').forEach(c => {
     c.onclick = () => {
       document.querySelectorAll('#menuFilters .chip').forEach(x => x.classList.remove('on'));
       c.classList.add('on');
       render(c.dataset.cat);
+      initReveal();
       window.scrollTo({top: wrap.offsetTop - 120, behavior: 'smooth'});
     };
   });
@@ -222,8 +224,82 @@ async function initMap(){
   setTimeout(() => _map.invalidateSize(), 120);
 }
 
+/* ---------- scroll reveal ---------- */
+const REVEAL_SELECTOR = [
+  '.sec', '.sec-head', '.statement', '.marks-band', '.split',
+  '.mv-card', '.tl', '.cat', '.pagehead > div', '.hero-inner > *'
+].join(',');
+
+const STAGGER_SELECTOR = [
+  '.rail', '.usp-grid', '.ex-grid', '.marks', '.loc-grid',
+  '.offer-grid', '.mv', '.items', '.sauce-cloud', '.model-grid'
+].join(',');
+
+let _revealIO = null;
+
+function initReveal(){
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce) return;
+
+  if(!_revealIO){
+    _revealIO = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if(!e.isIntersecting) return;
+        e.target.classList.add('in');
+
+        // stagger children by index, capped so long lists do not crawl
+        if(e.target.hasAttribute('data-stagger')){
+          [...e.target.children].forEach((c, i) => {
+            c.style.transitionDelay = Math.min(i * 55, 440) + 'ms';
+          });
+        }
+        _revealIO.unobserve(e.target);
+      });
+    }, {rootMargin: '0px 0px -12% 0px', threshold: 0.08});
+  }
+
+  document.querySelectorAll(STAGGER_SELECTOR).forEach(el => {
+    if(el.dataset.stagger !== undefined) return;
+    el.setAttribute('data-stagger','');
+    _revealIO.observe(el);
+  });
+
+  document.querySelectorAll(REVEAL_SELECTOR).forEach(el => {
+    if(el.dataset.reveal !== undefined) return;
+    if(el.closest('[data-stagger]')) return;      // don't double-animate
+    el.setAttribute('data-reveal','');
+    _revealIO.observe(el);
+  });
+}
+
+/* ---------- ember drift ---------- */
+function initParallax(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const embers = document.querySelectorAll('.ember');
+  if(!embers.length) return;
+  let ticking = false;
+  const onScroll = () => {
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const y = window.scrollY;
+      embers.forEach((e, i) => {
+        e.style.transform = `translate3d(0, ${y * (i % 2 ? -0.06 : 0.09)}px, 0)`;
+      });
+      ticking = false;
+    });
+  };
+  window.addEventListener('scroll', onScroll, {passive:true});
+}
+
+/* content rendered from JSON appears after the first scan — re-scan on settle */
+function rescanReveal(){ setTimeout(initReveal, 30); }
+
 document.addEventListener('DOMContentLoaded', () => {
+  initParallax();
   initMap();
+  setTimeout(initReveal, 40);
+  setTimeout(initReveal, 400);
   initMarquee();
   initLang();
   initDrawer();

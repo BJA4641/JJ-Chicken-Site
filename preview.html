@@ -367,6 +367,51 @@ body[dir="rtl"] .tl-year{font-family:var(--arabic);font-size:clamp(17px,2.4vw,24
 body[dir="rtl"] .tl h3{font-family:var(--arabic);font-size:clamp(18px,2.4vw,24px)}
 .tl p{font-size:14.5px;color:rgba(255,255,255,.6);line-height:1.7;max-width:66ch}
 
+/* ---------- SCROLL REVEAL ----------
+   Sections settle into place as they enter the viewport. Motion is small and
+   fast — 500ms, 26px — because this is a restaurant site, not a showreel.
+   Anything larger reads as a delay rather than a flourish. */
+[data-reveal]{
+  opacity:0;
+  transform:translate3d(0,26px,0);
+  transition:opacity .5s cubic-bezier(.22,.61,.36,1),
+             transform .58s cubic-bezier(.22,.61,.36,1);
+  will-change:opacity,transform;
+}
+[data-reveal].in{opacity:1;transform:none}
+
+/* children stagger in sequence rather than as one block */
+[data-stagger] > *{
+  opacity:0;
+  transform:translate3d(0,22px,0);
+  transition:opacity .46s cubic-bezier(.22,.61,.36,1),
+             transform .54s cubic-bezier(.22,.61,.36,1);
+}
+[data-stagger].in > *{opacity:1;transform:none}
+
+/* the badges arrive with a slight scale — they are discs, so rising alone
+   reads as flat */
+.marks[data-stagger] > *{transform:translate3d(0,20px,0) scale(.9)}
+.marks[data-stagger].in > *{transform:none}
+
+/* section headings lead their content by a beat */
+[data-reveal] .sec-label{transition-delay:.04s}
+[data-reveal] .sec-title{transition-delay:.08s}
+[data-reveal] .sec-sub{transition-delay:.13s}
+
+/* hero settles on load rather than on scroll */
+.hero [data-reveal]{transition-delay:.1s}
+
+/* the ember glow drifts slowly against the scroll */
+.ember{transition:transform .9s cubic-bezier(.22,.61,.36,1)}
+
+@media(prefers-reduced-motion:reduce){
+  [data-reveal],[data-stagger] > *{
+    opacity:1!important;transform:none!important;transition:none!important;
+  }
+  .ember{transition:none}
+}
+
 .page[hidden]{display:none}
 </style>
 </head>
@@ -2266,11 +2311,13 @@ async function initMenu(){
   };
 
   render('all');
+  initReveal();
   document.querySelectorAll('#menuFilters .chip').forEach(c => {
     c.onclick = () => {
       document.querySelectorAll('#menuFilters .chip').forEach(x => x.classList.remove('on'));
       c.classList.add('on');
       render(c.dataset.cat);
+      initReveal();
       window.scrollTo({top: wrap.offsetTop - 120, behavior: 'smooth'});
     };
   });
@@ -2322,8 +2369,82 @@ async function initMap(){
   setTimeout(() => _map.invalidateSize(), 120);
 }
 
+/* ---------- scroll reveal ---------- */
+const REVEAL_SELECTOR = [
+  '.sec', '.sec-head', '.statement', '.marks-band', '.split',
+  '.mv-card', '.tl', '.cat', '.pagehead > div', '.hero-inner > *'
+].join(',');
+
+const STAGGER_SELECTOR = [
+  '.rail', '.usp-grid', '.ex-grid', '.marks', '.loc-grid',
+  '.offer-grid', '.mv', '.items', '.sauce-cloud', '.model-grid'
+].join(',');
+
+let _revealIO = null;
+
+function initReveal(){
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce) return;
+
+  if(!_revealIO){
+    _revealIO = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if(!e.isIntersecting) return;
+        e.target.classList.add('in');
+
+        // stagger children by index, capped so long lists do not crawl
+        if(e.target.hasAttribute('data-stagger')){
+          [...e.target.children].forEach((c, i) => {
+            c.style.transitionDelay = Math.min(i * 55, 440) + 'ms';
+          });
+        }
+        _revealIO.unobserve(e.target);
+      });
+    }, {rootMargin: '0px 0px -12% 0px', threshold: 0.08});
+  }
+
+  document.querySelectorAll(STAGGER_SELECTOR).forEach(el => {
+    if(el.dataset.stagger !== undefined) return;
+    el.setAttribute('data-stagger','');
+    _revealIO.observe(el);
+  });
+
+  document.querySelectorAll(REVEAL_SELECTOR).forEach(el => {
+    if(el.dataset.reveal !== undefined) return;
+    if(el.closest('[data-stagger]')) return;      // don't double-animate
+    el.setAttribute('data-reveal','');
+    _revealIO.observe(el);
+  });
+}
+
+/* ---------- ember drift ---------- */
+function initParallax(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const embers = document.querySelectorAll('.ember');
+  if(!embers.length) return;
+  let ticking = false;
+  const onScroll = () => {
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const y = window.scrollY;
+      embers.forEach((e, i) => {
+        e.style.transform = `translate3d(0, ${y * (i % 2 ? -0.06 : 0.09)}px, 0)`;
+      });
+      ticking = false;
+    });
+  };
+  window.addEventListener('scroll', onScroll, {passive:true});
+}
+
+/* content rendered from JSON appears after the first scan — re-scan on settle */
+function rescanReveal(){ setTimeout(initReveal, 30); }
+
 document.addEventListener('DOMContentLoaded', () => {
+  initParallax();
   initMap();
+  setTimeout(initReveal, 40);
+  setTimeout(initReveal, 400);
   initMarquee();
   initLang();
   initDrawer();
@@ -2343,7 +2464,7 @@ function go(name){
   if(link) link.setAttribute('aria-current','page');
   window.scrollTo(0,0);
   initMarks(); initSauces(); initBranches(); initMenu(); initMarquee();
-  requestAnimationFrame(() => initMap());
+  requestAnimationFrame(() => { initMap(); initReveal(); });
   document.getElementById('drawer').classList.remove('show');
   document.getElementById('scrim').classList.remove('show');
   document.getElementById('burger').classList.remove('open');
