@@ -135,7 +135,7 @@ body[dir="rtl"] .drawer-nav a{font-family:var(--arabic);font-size:24px}
 body[dir="rtl"] .marquee-track{animation-direction:reverse}
 @keyframes slide{to{transform:translateX(-50%)}}
 .marquee-track span{font-family:var(--display);font-size:clamp(15px,2.4vw,22px);letter-spacing:.09em;padding:0 18px;white-space:nowrap}
-.marquee-track i{font-style:normal;opacity:.34;font-size:.72em;vertical-align:middle}
+.marquee-track i{font-style:normal;opacity:.5;font-size:1.35em;vertical-align:-.08em;padding:0 .06em}
 
 /* ---------- SECTIONS ---------- */
 .sec{padding:clamp(64px,10vw,120px) var(--pad);position:relative}
@@ -284,11 +284,8 @@ body[dir="rtl"] .statement p{font-family:var(--arabic);line-height:1.25}
    Rebuilt from Almed's supplied badge set: black disc, gold star,
    condensed caps, gold rule, ruled dots. Scalable, so it stays crisp
    and the wording is editable in marks.json rather than baked into art. */
-.marks-band{padding:clamp(60px,9vw,110px) var(--pad);background:var(--smoke);border-block:1px solid rgba(255,255,255,.08)}
-.marks-head{max-width:52ch;margin:0 auto clamp(38px,6vw,62px);text-align:center}
-.marks-title{font-size:clamp(28px,5vw,58px);line-height:1}
-.marks-title em{font-style:normal;color:var(--yellow);display:block}
-body[dir="rtl"] .marks-title{font-family:var(--arabic);line-height:1.25}
+.marks-band{padding:clamp(48px,7.5vw,88px) var(--pad);background:var(--smoke);border-block:1px solid rgba(255,255,255,.08)}
+
 .marks{display:flex;gap:clamp(14px,3vw,34px);flex-wrap:wrap;justify-content:center;align-items:flex-start}
 .mark-badge{
   --d:clamp(112px,15vw,150px);
@@ -345,6 +342,31 @@ body[dir="rtl"] .mb-text{font-family:var(--arabic);font-size:calc(var(--d) * .09
 .leaflet-control-attribution{background:rgba(0,0,0,.6)!important;color:rgba(255,255,255,.4)!important}
 .leaflet-control-attribution a{color:rgba(255,255,255,.6)!important}
 
+/* ---------- ABOUT ---------- */
+.split{display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,56px)}
+@media(min-width:900px){.split{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);align-items:start}}
+.split-body p{font-size:clamp(15px,1.85vw,18px);color:rgba(255,255,255,.66);line-height:1.75;margin-bottom:18px}
+.split-body p b{color:var(--white);font-weight:600}
+.split-body p i{color:var(--yellow);font-style:normal}
+
+.mv{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.mv-card{background:var(--black);border:1px solid rgba(250,210,44,.28);border-radius:20px;
+  padding:clamp(26px,4vw,42px);position:relative;overflow:hidden}
+.mv-card::before{content:"";position:absolute;inset-inline-start:0;top:0;bottom:0;width:4px;background:var(--yellow)}
+.mv-label{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--yellow);margin-bottom:18px}
+.mv-text{font-size:clamp(16px,2.1vw,21px);line-height:1.6;color:rgba(255,255,255,.86)}
+
+.timeline{list-style:none;counter-reset:tl;display:grid;gap:0}
+.tl{position:relative;padding:28px 0 28px clamp(78px,11vw,132px);border-top:1px solid rgba(255,255,255,.1)}
+body[dir="rtl"] .tl{padding:28px clamp(78px,11vw,132px) 28px 0}
+.tl:last-child{border-bottom:1px solid rgba(255,255,255,.1)}
+.tl-year{position:absolute;inset-inline-start:0;top:28px;font-family:var(--display);
+  font-size:clamp(20px,3vw,30px);color:var(--yellow);line-height:1;letter-spacing:.02em}
+body[dir="rtl"] .tl-year{font-family:var(--arabic);font-size:clamp(17px,2.4vw,24px)}
+.tl h3{font-family:var(--display);text-transform:uppercase;font-size:clamp(20px,2.8vw,28px);margin-bottom:9px;line-height:1.05}
+body[dir="rtl"] .tl h3{font-family:var(--arabic);font-size:clamp(18px,2.4vw,24px)}
+.tl p{font-size:14.5px;color:rgba(255,255,255,.6);line-height:1.7;max-width:66ch}
+
 .page[hidden]{display:none}
 </style>
 </head>
@@ -364,11 +386,12 @@ body[dir="rtl"] .mb-text{font-family:var(--arabic);font-size:calc(var(--d) * .09
   <button class="drawer-close" id="drawerClose" aria-label="Close">×</button>
   <nav class="drawer-nav">
     <a href="#/index" aria-current="page"><span><span class="en">Home</span><span class="ar">الرئيسية</span></span><em>01</em></a>
-    <a href="#/menu"><span><span class="en">Menu</span><span class="ar">القائمة</span></span><em>02</em></a>
-    <a href="#/locations"><span><span class="en">Locations</span><span class="ar">الفروع</span></span><em>03</em></a>
-    <a href="#/franchise"><span><span class="en">Franchise</span><span class="ar">الامتياز</span></span><em>04</em></a>
-    <a href="#"><span><span class="en">Careers</span><span class="ar">الوظائف</span></span><em>05</em></a>
-    <a href="#"><span><span class="en">Contact</span><span class="ar">اتصل بنا</span></span><em>06</em></a>
+    <a href="#/about"><span><span class="en">About us</span><span class="ar">من نحن</span></span><em>02</em></a>
+    <a href="#/menu"><span><span class="en">Menu</span><span class="ar">القائمة</span></span><em>03</em></a>
+    <a href="#/locations"><span><span class="en">Locations</span><span class="ar">الفروع</span></span><em>04</em></a>
+    <a href="#/franchise"><span><span class="en">Franchise</span><span class="ar">الامتياز</span></span><em>05</em></a>
+    <a href="#"><span><span class="en">Careers</span><span class="ar">الوظائف</span></span><em>06</em></a>
+    <a href="#"><span><span class="en">Contact</span><span class="ar">اتصل بنا</span></span><em>07</em></a>
   </nav>
   <a href="https://order.jjchicken.com" target="_blank" rel="noopener" class="drawer-cta"><span class="en">Order now</span><span class="ar">اطلب الآن</span></a>
   <a href="tel:600545554" class="drawer-tel">600 545 554</a>
@@ -426,10 +449,6 @@ body[dir="rtl"] .mb-text{font-family:var(--arabic);font-size:calc(var(--d) * .09
 </section>
 
 <section class="marks-band">
-  <div class="marks-head">
-    <div class="sec-label"><span class="en">Five stars, every plate</span><span class="ar">خمس نجوم في كل طبق</span></div>
-    <h2 class="display marks-title"><span class="en">Nothing here is a claim.<em> All five are standards.</em></span><span class="ar">لا شيء هنا مجرّد ادّعاء.<em> الخمسة كلها معايير.</em></span></h2>
-  </div>
   <div class="marks" id="marks"></div>
 </section>
 
@@ -526,20 +545,26 @@ body[dir="rtl"] .mb-text{font-family:var(--arabic);font-size:calc(var(--d) * .09
     <h2 class="display sec-title"><span class="en">Where next</span><span class="ar">إلى أين</span></h2>
   </div>
   <div class="explore">
-    <a href="#/menu" class="ex-card">
+    <a href="#/about" class="ex-card">
       <div class="ex-n">01</div>
+      <h3><span class="en">About us</span><span class="ar">من نحن</span></h3>
+      <p><span class="en">Where the name comes from, why charcoal, and fifteen years of doing one thing.</span><span class="ar">من أين جاء الاسم، ولماذا الفحم، وخمسة عشر عاماً في إتقان شيء واحد.</span></p>
+      <span class="ex-go"><span class="en">Our story</span><span class="ar">قصّتنا</span></span>
+    </a>
+    <a href="#/menu" class="ex-card">
+      <div class="ex-n">02</div>
       <h3><span class="en">Menu</span><span class="ar">القائمة</span></h3>
       <p><span class="en">Grills, platters, sandwiches, shawarma, wings, salads and a kids' menu.</span><span class="ar">مشاوي، صحون، ساندويتشات، شاورما، أجنحة، سلطات وقائمة أطفال.</span></p>
       <span class="ex-go"><span class="en">See the menu</span><span class="ar">شاهد القائمة</span></span>
     </a>
     <a href="#/locations" class="ex-card">
-      <div class="ex-n">02</div>
+      <div class="ex-n">03</div>
       <h3><span class="en">Locations</span><span class="ar">الفروع</span></h3>
       <p><span class="en">Twelve branches across Dubai and Abu Dhabi — street shops, mall food courts and fast-casual units.</span><span class="ar">اثنا عشر فرعاً في دبي وأبوظبي — محلات في الشارع، وأركان طعام في المولات، ووحدات كاجوال سريعة.</span></p>
       <span class="ex-go"><span class="en">Find your branch</span><span class="ar">اعثر على فرعك</span></span>
     </a>
     <a href="#/franchise" class="ex-card">
-      <div class="ex-n">03</div>
+      <div class="ex-n">04</div>
       <h3><span class="en">Franchise</span><span class="ar">الامتياز</span></h3>
       <p><span class="en">A category we created, a proven model, and three ways to operate it across the GCC.</span><span class="ar">فئة أنشأناها، ونموذج مُثبت، وثلاث طرق لتشغيله في دول الخليج.</span></p>
       <span class="ex-go"><span class="en">Partner with us</span><span class="ar">كن شريكاً</span></span>
@@ -555,6 +580,7 @@ body[dir="rtl"] .mb-text{font-family:var(--arabic);font-size:calc(var(--d) * .09
       <a href="tel:600545554" class="foot-tel">600 545 554</a>
     </div>
     <nav class="foot-links">
+      <a href="#/about"><span class="en">About us</span><span class="ar">من نحن</span></a>
       <a href="#/menu"><span class="en">Menu</span><span class="ar">القائمة</span></a>
       <a href="#/locations"><span class="en">Locations</span><span class="ar">الفروع</span></a>
       <a href="#/franchise"><span class="en">Franchise</span><span class="ar">الامتياز</span></a>
@@ -681,6 +707,145 @@ body[dir="rtl"] .mb-text{font-family:var(--arabic);font-size:calc(var(--d) * .09
 }</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is JJ Chicken halal?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. All JJ Chicken is Grade A, halal, hormone free and grain fed, marinated daily and charcoal-grilled to order."}}, {"@type": "Question", "name": "Where can I find JJ Chicken in the UAE?", "acceptedAnswer": {"@type": "Answer", "text": "JJ Chicken operates twelve branches across Dubai and Abu Dhabi, including Dubai Mall, Dubai Festival City, City Centre Mirdif, Al Barsha, Motor City, Kite Beach, Discovery Gardens, World Trade Center, Silicon Central, Abu Dhabi Corniche, Reem Mall and Al Raha."}}, {"@type": "Question", "name": "How do I order JJ Chicken online?", "acceptedAnswer": {"@type": "Answer", "text": "Order directly at order.jjchicken.com, or call the call centre on 600 545 554. JJ Chicken is also available on Deliveroo, Talabat, Careem, Noon Food and InstaShop."}}, {"@type": "Question", "name": "What makes charcoal-grilled chicken different?", "acceptedAnswer": {"@type": "Answer", "text": "Charcoal grilling gives a smokey, tender and juicy result, retains more nutrients, and lowers fat and sodium compared with frying. JJ Chicken was the first fast-casual restaurant to bring authentic charcoal-grilled chicken to the UAE, in 2010."}}, {"@type": "Question", "name": "What flavours can I choose?", "acceptedAnswer": {"@type": "Answer", "text": "Grilled chicken comes in three marinations: JJ Original, Spicy and Herbal. Wings come in Dynamite, Buffalo or Garlic Coriander."}}]}</script>
 </div>
+<div class="page" id="page-about" hidden>
+
+
+<section class="pagehead grain">
+  <div class="ember ember-1"></div>
+  <div style="position:relative;z-index:2">
+    <div class="eyebrow"><span class="en">About us</span><span class="ar">من نحن</span></div>
+    <h1 class="display sec-title"><span class="en">Where healthy<em> meets tasty</em></span><span class="ar">حيث يلتقي الصحي<em> باللذيذ</em></span></h1>
+    <p class="sec-sub" style="max-width:60ch"><span class="en">JJ Chicken was created in 2010 with one objective: charcoal-grilled chicken that fits a balanced diet, served quickly, without giving up flavour to do it.</span><span class="ar">تأسّست جي جي تشيكن عام ٢٠١٠ بهدف واحد: دجاج مشوي على الفحم يناسب نظاماً غذائياً متوازناً، يُقدَّم بسرعة، دون التنازل عن النكهة.</span></p>
+  </div>
+</section>
+
+<div class="marquee"><div class="marquee-track" id="mq"></div></div>
+
+<!-- THE NAME -->
+<section class="sec">
+  <div class="split">
+    <div>
+      <div class="sec-label"><span class="en">The name</span><span class="ar">الاسم</span></div>
+      <h2 class="display" style="font-size:clamp(30px,5.4vw,62px);margin-bottom:20px"><span class="en">JJ means chicken</span><span class="ar">جي جي تعني دجاج</span></h2>
+    </div>
+    <div class="split-body">
+      <p><span class="en"><b>JJ</b> is short for <i>d'jeje</i> — <i>jayje</i> in Lebanese and Levantine Arabic — which simply means chicken. No cleverness, no invented word. We do one thing, and the name says it.</span><span class="ar"><b>ج ج</b> اختصار لكلمة <i>دجاجة</i> — <i>جاجة</i> في اللهجة اللبنانية والشامية. لا ذكاء لغوي ولا كلمة مخترعة. نحن نفعل شيئاً واحداً، والاسم يقوله.</span></p>
+      <p><span class="en">The logo carries the same idea. A semi-square frames an abstract chicken — its beak and its crest — with the two letters inside. The yellow around it has not changed since the first shop opened, and by now it is the part of the brand people recognise before they read anything.</span><span class="ar">الشعار يحمل الفكرة نفسها. إطار شبه مربّع يحيط بدجاجة مجرّدة — منقارها وعرفها — مع الحرفين في الداخل. واللون الأصفر حولهما لم يتغيّر منذ افتتاح أول فرع، وأصبح اليوم الجزء الذي يتعرّف عليه الناس قبل أن يقرأوا أي شيء.</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- MISSION / VISION -->
+<section class="sec usp">
+  <div class="mv">
+    <article class="mv-card">
+      <div class="mv-label"><span class="en">Our vision</span><span class="ar">رؤيتنا</span></div>
+      <p class="mv-text"><span class="en">To become the destination for the best authentic charcoal-grilled, 100% hormone-free chicken — using the simplest and freshest produce, in a dining experience that stays casual and accessible.</span><span class="ar">أن نصبح الوجهة الأولى لأفضل دجاج أصيل مشوي على الفحم وخالٍ تماماً من الهرمونات — بأبسط المكوّنات وأطزجها، ضمن تجربة طعام تبقى بسيطة وفي متناول الجميع.</span></p>
+    </article>
+    <article class="mv-card">
+      <div class="mv-label"><span class="en">Our mission</span><span class="ar">مهمّتنا</span></div>
+      <p class="mv-text"><span class="en">To prove that eating well and eating boldly are not a trade-off. Every plate is grain-fed, hormone-free chicken, marinated daily and grilled over charcoal to order — never held, never compromised.</span><span class="ar">أن نُثبت أن الأكل الصحي والأكل اللذيذ ليسا خيارين متضادين. كل طبق دجاج مغذّى بالحبوب وخالٍ من الهرمونات، يُتبّل يومياً ويُشوى على الفحم عند الطلب — لا يُحضَّر مسبقاً ولا نساوم عليه.</span></p>
+    </article>
+  </div>
+</section>
+
+<!-- HISTORY -->
+<section class="sec">
+  <div class="sec-head">
+    <div class="sec-label"><span class="en">Our history</span><span class="ar">قصّتنا</span></div>
+    <h2 class="display sec-title"><span class="en">Fifteen years<em> over charcoal</em></span><span class="ar">خمسة عشر عاماً<em> على الفحم</em></span></h2>
+  </div>
+  <ol class="timeline">
+    <li class="tl">
+      <div class="tl-year">2010</div>
+      <h3><span class="en">The first grill</span><span class="ar">أول شواية</span></h3>
+      <p><span class="en">JJ opens in the UAE serving grain-fed, hormone-free charcoal-grilled chicken in a quick-service format — the first fast-casual restaurant in the country to do it.</span><span class="ar">افتتحت جي جي في الإمارات لتقدّم دجاجاً مغذّى بالحبوب وخالياً من الهرمونات مشوياً على الفحم بنمط الخدمة السريعة — أول مطعم كاجوال سريع في الدولة يفعل ذلك.</span></p>
+    </li>
+    <li class="tl">
+      <div class="tl-year">2015</div>
+      <h3><span class="en">Almed Retail</span><span class="ar">ألمد ريتيل</span></h3>
+      <p><span class="en">Almed Retail is established by founder and chairman Mr. Ahmad Zaabri — an operator and investor building scalable brands across the Middle East. JJ Chicken becomes part of its portfolio.</span><span class="ar">تأسّست ألمد ريتيل على يد المؤسّس ورئيس مجلس الإدارة السيد أحمد الزعابي — مشغّل ومستثمر يبني علامات قابلة للتوسّع في الشرق الأوسط. وأصبحت جي جي تشيكن جزءاً من محفظتها.</span></p>
+    </li>
+    <li class="tl">
+      <div class="tl-year">Today</div>
+      <h3><span class="en">Twelve branches and a food truck</span><span class="ar">اثنا عشر فرعاً وعربة طعام</span></h3>
+      <p><span class="en">Street shops, mall food courts and fast-casual units across Dubai and Abu Dhabi, with a menu that now runs from grills and platters to bowls, shawarma, wings and subs.</span><span class="ar">محلات في الشارع، وأركان طعام في المولات، ووحدات كاجوال سريعة في دبي وأبوظبي، بقائمة تمتد اليوم من المشاوي والأطباق إلى البولز والشاورما والأجنحة والسندويشات.</span></p>
+    </li>
+    <li class="tl">
+      <div class="tl-year"><span class="en">Next</span><span class="ar">التالي</span></div>
+      <h3><span class="en">Across the GCC</span><span class="ar">في دول الخليج</span></h3>
+      <p><span class="en">The model is open to franchise partners across the region — a category we created, with the operating discipline to repeat it.</span><span class="ar">النموذج متاح لشركاء الامتياز في المنطقة — فئة أنشأناها، وانضباط تشغيلي يسمح بتكرارها.</span></p>
+    </li>
+  </ol>
+</section>
+
+<!-- WHY CHARCOAL -->
+<section class="sec usp">
+  <div class="sec-head">
+    <div class="sec-label"><span class="en">Why charcoal</span><span class="ar">لماذا الفحم</span></div>
+    <h2 class="display sec-title"><span class="en">It is not a style choice</span><span class="ar">ليس خياراً شكلياً</span></h2>
+    <p class="sec-sub"><span class="en">Charcoal is slower and harder to run than a fryer. We use it because of what it does to the meat.</span><span class="ar">الفحم أبطأ وأصعب تشغيلاً من المقلاة. نستخدمه بسبب ما يفعله باللحم.</span></p>
+  </div>
+  <div class="usp-grid">
+    <div class="usp-item"><h4><span class="en">Taste</span><span class="ar">النكهة</span></h4><p><span class="en">Smokey, tender and juicy — a flavour that cannot be reproduced on a flat top or in oil.</span><span class="ar">مدخّنة، طرية وغنية بعصارتها — نكهة لا يمكن تقليدها على الشواية المسطّحة أو بالزيت.</span></p></div>
+    <div class="usp-item"><h4><span class="en">Nutrients</span><span class="ar">العناصر الغذائية</span></h4><p><span class="en">Grilling retains more of what is in the meat to begin with, and is easier on digestion.</span><span class="ar">الشوي يحافظ على قدر أكبر مما في اللحم أصلاً، وهو أسهل على الهضم.</span></p></div>
+    <div class="usp-item"><h4><span class="en">Less fat, less sodium</span><span class="ar">دهون وصوديوم أقل</span></h4><p><span class="en">Fat renders off over the coals rather than being absorbed, and the meat needs less salt to taste of something.</span><span class="ar">الدهون تتساقط فوق الجمر بدل أن تُمتَص، واللحم يحتاج ملحاً أقل ليكون له طعم.</span></p></div>
+    <div class="usp-item"><h4><span class="en">One ingredient</span><span class="ar">مكوّن واحد</span></h4><p><span class="en">Focusing on chicken alone keeps the kitchen simple, the quality consistent, and the specialty sharp.</span><span class="ar">التركيز على الدجاج وحده يُبقي المطبخ بسيطاً، والجودة ثابتة، والتخصّص واضحاً.</span></p></div>
+  </div>
+</section>
+
+<!-- STANDARDS -->
+<section class="marks-band">
+  <div class="marks" id="marks"></div>
+</section>
+
+<!-- ALMED -->
+<section class="sec">
+  <div class="split">
+    <div>
+      <div class="sec-label"><span class="en">Part of</span><span class="ar">جزء من</span></div>
+      <h2 class="display" style="font-size:clamp(30px,5.4vw,62px);margin-bottom:20px"><span class="en">Almed Retail</span><span class="ar">ألمد ريتيل</span></h2>
+    </div>
+    <div class="split-body">
+      <p><span class="en">JJ Chicken is one of several brands operated by Almed Retail, an investor and operator in the Middle East established in 2015 by founder and chairman Mr. Ahmad Zaabri.</span><span class="ar">جي جي تشيكن واحدة من عدة علامات تُشغّلها ألمد ريتيل، وهي شركة استثمار وتشغيل في الشرق الأوسط تأسّست عام ٢٠١٥ على يد المؤسّس ورئيس مجلس الإدارة السيد أحمد الزعابي.</span></p>
+      <p><span class="en">Almed works on a partnership model, backing scalable brands and building them locally and internationally.</span><span class="ar">تعمل ألمد بنموذج الشراكة، فتدعم العلامات القابلة للتوسّع وتبنيها محلياً ودولياً.</span></p>
+      <div class="cta-row" style="margin-top:26px">
+        <a href="#/franchise" class="btn-solid"><span class="en">Franchise with us</span><span class="ar">كن شريك امتياز</span></a>
+        <a href="#/locations" class="btn-ghost"><span class="en">Find a branch</span><span class="ar">اعثر على فرع</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="foot-top">
+    <div>
+      <div class="mark" style="margin-bottom:18px"><span class="mark-glyph"><span>JJ</span></span><span class="mark-name">JJ CHICKEN</span></div>
+      <div class="foot-tel-l"><span class="en">Call centre</span><span class="ar">مركز الاتصال</span></div>
+      <a href="tel:600545554" class="foot-tel">600 545 554</a>
+    </div>
+    <nav class="foot-links">
+      <a href="#/about"><span class="en">About us</span><span class="ar">من نحن</span></a>
+      <a href="#/menu"><span class="en">Menu</span><span class="ar">القائمة</span></a>
+      <a href="#/locations"><span class="en">Locations</span><span class="ar">الفروع</span></a>
+      <a href="#/franchise"><span class="en">Franchise</span><span class="ar">الامتياز</span></a>
+      <a href="https://order.jjchicken.com" target="_blank" rel="noopener"><span class="en">Order online</span><span class="ar">اطلب أونلاين</span></a>
+      <a href="#"><span class="en">Careers</span><span class="ar">الوظائف</span></a>
+      <a href="#"><span class="en">Contact</span><span class="ar">اتصل بنا</span></a>
+    </nav>
+    <div class="foot-social">
+      <div class="foot-tel-l"><span class="en">Follow</span><span class="ar">تابعنا</span></div>
+      <a href="https://www.instagram.com/jjchicken/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.facebook.com/jjchicken/" target="_blank" rel="noopener">Facebook</a>
+      <a href="mailto:info@jjchicken.com">info@jjchicken.com</a>
+    </div>
+  </div>
+  <p class="foot-note">
+    <span class="en">Concept build for the Almed Retail Website Rebuild Programme. Type shown in Oswald and Figtree as stand-ins for DIN Condensed Bold and Aftika, swapped in once licensed webfonts are supplied. Prices are not published on this site — they live on order.jjchicken.com so they are never out of date here.</span>
+    <span class="ar">نسخة تجريبية لبرنامج إعادة بناء مواقع ألمد ريتيل. الخطوط المعروضة Oswald وFigtree كبديل مؤقت عن DIN Condensed Bold وAftika، وتُستبدل فور توفير الخطوط المرخّصة. الأسعار غير منشورة على هذا الموقع — فهي على order.jjchicken.com حتى لا تصبح قديمة هنا.</span>
+  </p>
+</footer>
+
+</div>
 <div class="page" id="page-menu" hidden>
 
 
@@ -726,6 +891,7 @@ body[dir="rtl"] .mb-text{font-family:var(--arabic);font-size:calc(var(--d) * .09
       <a href="tel:600545554" class="foot-tel">600 545 554</a>
     </div>
     <nav class="foot-links">
+      <a href="#/about"><span class="en">About us</span><span class="ar">من نحن</span></a>
       <a href="#/menu"><span class="en">Menu</span><span class="ar">القائمة</span></a>
       <a href="#/locations"><span class="en">Locations</span><span class="ar">الفروع</span></a>
       <a href="#/franchise"><span class="en">Franchise</span><span class="ar">الامتياز</span></a>
@@ -1325,6 +1491,7 @@ body[dir="rtl"] .mb-text{font-family:var(--arabic);font-size:calc(var(--d) * .09
       <a href="tel:600545554" class="foot-tel">600 545 554</a>
     </div>
     <nav class="foot-links">
+      <a href="#/about"><span class="en">About us</span><span class="ar">من نحن</span></a>
       <a href="#/menu"><span class="en">Menu</span><span class="ar">القائمة</span></a>
       <a href="#/locations"><span class="en">Locations</span><span class="ar">الفروع</span></a>
       <a href="#/franchise"><span class="en">Franchise</span><span class="ar">الامتياز</span></a>
@@ -1504,6 +1671,7 @@ body[dir="rtl"] .mb-text{font-family:var(--arabic);font-size:calc(var(--d) * .09
       <a href="tel:600545554" class="foot-tel">600 545 554</a>
     </div>
     <nav class="foot-links">
+      <a href="#/about"><span class="en">About us</span><span class="ar">من نحن</span></a>
       <a href="#/menu"><span class="en">Menu</span><span class="ar">القائمة</span></a>
       <a href="#/locations"><span class="en">Locations</span><span class="ar">الفروع</span></a>
       <a href="#/franchise"><span class="en">Franchise</span><span class="ar">الامتياز</span></a>
@@ -2183,7 +2351,7 @@ function go(name){
 }
 function fromHash(){
   const n = (location.hash.replace('#/','') || 'index');
-  go(['index','menu','locations','franchise'].includes(n) ? n : 'index');
+  go(['index','about','menu','locations','franchise'].includes(n) ? n : 'index');
 }
 window.addEventListener('hashchange', fromHash);
 window.addEventListener('DOMContentLoaded', fromHash);

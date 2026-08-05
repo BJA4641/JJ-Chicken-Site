@@ -20,6 +20,15 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://jjchicken.com/menu/"/>
   </url>
   <url>
+    <loc>https://jjchicken.com/about/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-AE" href="https://jjchicken.com/about/"/>
+    <xhtml:link rel="alternate" hreflang="ar-AE" href="https://jjchicken.com/about/?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jjchicken.com/about/"/>
+  </url>
+  <url>
     <loc>https://jjchicken.com/locations/</loc>
     <lastmod>2026-08-04</lastmod>
     <changefreq>monthly</changefreq>

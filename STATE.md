@@ -18,6 +18,7 @@
 | ✅ | `menu.html` — categories from JSON, no prices |
 | ✅ | `locations.html` — 12 branches, area filter, tel + directions |
 | ✅ | `franchise.html` — 3 models, support pillars, criteria, 6-step process |
+| ✅ | `about.html` — name story, vision, mission, history timeline, why charcoal, Almed Retail |
 | ✅ | Branch register digitised from Almed's Physical Locations spreadsheet |
 | ✅ | Al Shamkha removed, Silicon Central DSO added, per instruction |
 
@@ -52,6 +53,14 @@
 ---
 
 ## Decisions this session
+
+- About page added: the name story, vision and mission verbatim from Almed's
+  documents, a four-step history, why charcoal, and the Almed Retail parent
+  section. Wired into drawer nav, footer, homepage explore cards and sitemap.
+
+- Quality-mark band reverted to badges only — the "claim / standards" headline
+  was removed. The five marks speak for themselves.
+- Marquee star separators enlarged to 1.35em without changing the word size.
 
 - Repo restructured for a public, client-facing GitHub: all tooling references
   removed, context file renamed to `AGENTS.md`.

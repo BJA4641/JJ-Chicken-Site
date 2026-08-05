@@ -121,7 +121,7 @@ body[dir="rtl"] .drawer-nav a{font-family:var(--arabic);font-size:24px}
 body[dir="rtl"] .marquee-track{animation-direction:reverse}
 @keyframes slide{to{transform:translateX(-50%)}}
 .marquee-track span{font-family:var(--display);font-size:clamp(15px,2.4vw,22px);letter-spacing:.09em;padding:0 18px;white-space:nowrap}
-.marquee-track i{font-style:normal;opacity:.34;font-size:.72em;vertical-align:middle}
+.marquee-track i{font-style:normal;opacity:.5;font-size:1.35em;vertical-align:-.08em;padding:0 .06em}
 
 /* ---------- SECTIONS ---------- */
 .sec{padding:clamp(64px,10vw,120px) var(--pad);position:relative}
@@ -270,11 +270,8 @@ body[dir="rtl"] .statement p{font-family:var(--arabic);line-height:1.25}
    Rebuilt from Almed's supplied badge set: black disc, gold star,
    condensed caps, gold rule, ruled dots. Scalable, so it stays crisp
    and the wording is editable in marks.json rather than baked into art. */
-.marks-band{padding:clamp(60px,9vw,110px) var(--pad);background:var(--smoke);border-block:1px solid rgba(255,255,255,.08)}
-.marks-head{max-width:52ch;margin:0 auto clamp(38px,6vw,62px);text-align:center}
-.marks-title{font-size:clamp(28px,5vw,58px);line-height:1}
-.marks-title em{font-style:normal;color:var(--yellow);display:block}
-body[dir="rtl"] .marks-title{font-family:var(--arabic);line-height:1.25}
+.marks-band{padding:clamp(48px,7.5vw,88px) var(--pad);background:var(--smoke);border-block:1px solid rgba(255,255,255,.08)}
+
 .marks{display:flex;gap:clamp(14px,3vw,34px);flex-wrap:wrap;justify-content:center;align-items:flex-start}
 .mark-badge{
   --d:clamp(112px,15vw,150px);
@@ -330,3 +327,28 @@ body[dir="rtl"] .mb-text{font-family:var(--arabic);font-size:calc(var(--d) * .09
 .leaflet-container a.leaflet-popup-close-button{color:rgba(255,255,255,.5)}
 .leaflet-control-attribution{background:rgba(0,0,0,.6)!important;color:rgba(255,255,255,.4)!important}
 .leaflet-control-attribution a{color:rgba(255,255,255,.6)!important}
+
+/* ---------- ABOUT ---------- */
+.split{display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,56px)}
+@media(min-width:900px){.split{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);align-items:start}}
+.split-body p{font-size:clamp(15px,1.85vw,18px);color:rgba(255,255,255,.66);line-height:1.75;margin-bottom:18px}
+.split-body p b{color:var(--white);font-weight:600}
+.split-body p i{color:var(--yellow);font-style:normal}
+
+.mv{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.mv-card{background:var(--black);border:1px solid rgba(250,210,44,.28);border-radius:20px;
+  padding:clamp(26px,4vw,42px);position:relative;overflow:hidden}
+.mv-card::before{content:"";position:absolute;inset-inline-start:0;top:0;bottom:0;width:4px;background:var(--yellow)}
+.mv-label{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--yellow);margin-bottom:18px}
+.mv-text{font-size:clamp(16px,2.1vw,21px);line-height:1.6;color:rgba(255,255,255,.86)}
+
+.timeline{list-style:none;counter-reset:tl;display:grid;gap:0}
+.tl{position:relative;padding:28px 0 28px clamp(78px,11vw,132px);border-top:1px solid rgba(255,255,255,.1)}
+body[dir="rtl"] .tl{padding:28px clamp(78px,11vw,132px) 28px 0}
+.tl:last-child{border-bottom:1px solid rgba(255,255,255,.1)}
+.tl-year{position:absolute;inset-inline-start:0;top:28px;font-family:var(--display);
+  font-size:clamp(20px,3vw,30px);color:var(--yellow);line-height:1;letter-spacing:.02em}
+body[dir="rtl"] .tl-year{font-family:var(--arabic);font-size:clamp(17px,2.4vw,24px)}
+.tl h3{font-family:var(--display);text-transform:uppercase;font-size:clamp(20px,2.8vw,28px);margin-bottom:9px;line-height:1.05}
+body[dir="rtl"] .tl h3{font-family:var(--arabic);font-size:clamp(18px,2.4vw,24px)}
+.tl p{font-size:14.5px;color:rgba(255,255,255,.6);line-height:1.7;max-width:66ch}
