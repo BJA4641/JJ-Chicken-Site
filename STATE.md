@@ -2,7 +2,7 @@
 
 **Last updated:** 2026-08-05
 **Phase:** Pitch build — JJ Chicken concept, pre-client-presentation
-**Deploy:** not yet deployed
+**Deploy:** live at `jjchicken.vercel.app` (Vercel project `jj-chicken-site`)
 
 ---
 
@@ -53,6 +53,24 @@
 ---
 
 ## Decisions this session
+
+- Repo structure repaired. The GitHub web uploads had paired filenames with the
+  wrong contents — a file named `site.js` held schema JSON, one named `ROADMAP.md`
+  held the stylesheet, `download` held a branch page. A later upload fixed
+  `assets/`, `docs/` and `locations/`, leaving 21 mis-paired strays at the root.
+  All 21 removed. Every file was identified by reading its content, never its
+  name. No renames were needed — every correct file was already in place.
+
+- Where a stray held bytes found nowhere else, the surviving copy was confirmed
+  newer before deleting: `assets/css/site.css` carries the About-page rules and
+  the `#map` z-index fix; `assets/js/site.js` carries `initReveal`,
+  `initParallax` and `rescanReveal`. The root copies predated both.
+
+- `about.html` `<head>` completed. It had the stylesheet and canonical but was
+  missing all three `hreflang` alternates, the full Open Graph block, the Twitter
+  card and the Google Fonts preconnect — so it rendered in fallback typefaces and
+  was invisible to Arabic hreflang targeting. Head rebuilt from the
+  `franchise.html` pattern.
 
 - About page added: the name story, vision and mission verbatim from Almed's
   documents, a four-step history, why charcoal, and the Almed Retail parent
