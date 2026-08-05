@@ -154,4 +154,49 @@
     <xhtml:link rel="alternate" hreflang="ar-AE" href="https://jjchicken.com/locations/al-raha/?lang=ar"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://jjchicken.com/locations/al-raha/"/>
   </url>
+  <url>
+    <loc>https://jjchicken.com/menu/charcoal-grilled-chicken/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-AE" href="https://jjchicken.com/menu/charcoal-grilled-chicken/"/>
+    <xhtml:link rel="alternate" hreflang="ar-AE" href="https://jjchicken.com/menu/charcoal-grilled-chicken/?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jjchicken.com/menu/charcoal-grilled-chicken/"/>
+  </url>
+  <url>
+    <loc>https://jjchicken.com/menu/tawouk-platter/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-AE" href="https://jjchicken.com/menu/tawouk-platter/"/>
+    <xhtml:link rel="alternate" hreflang="ar-AE" href="https://jjchicken.com/menu/tawouk-platter/?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jjchicken.com/menu/tawouk-platter/"/>
+  </url>
+  <url>
+    <loc>https://jjchicken.com/menu/chicken-breast-platter/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-AE" href="https://jjchicken.com/menu/chicken-breast-platter/"/>
+    <xhtml:link rel="alternate" hreflang="ar-AE" href="https://jjchicken.com/menu/chicken-breast-platter/?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jjchicken.com/menu/chicken-breast-platter/"/>
+  </url>
+  <url>
+    <loc>https://jjchicken.com/menu/jj-w-batata/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-AE" href="https://jjchicken.com/menu/jj-w-batata/"/>
+    <xhtml:link rel="alternate" hreflang="ar-AE" href="https://jjchicken.com/menu/jj-w-batata/?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jjchicken.com/menu/jj-w-batata/"/>
+  </url>
+  <url>
+    <loc>https://jjchicken.com/menu/shawarma-rolls/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-AE" href="https://jjchicken.com/menu/shawarma-rolls/"/>
+    <xhtml:link rel="alternate" hreflang="ar-AE" href="https://jjchicken.com/menu/shawarma-rolls/?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jjchicken.com/menu/shawarma-rolls/"/>
+  </url>
 </urlset>

@@ -147,13 +147,17 @@ async function initMenu(){
     const list = catId === 'all' ? cats : cats.filter(c => c.id === catId);
     wrap.innerHTML = list.map(c => `
       <section class="cat">
-        <h2 class="cat-title"><span class="en">${c.name}</span><span class="ar">${c.nameAr}</span></h2>
+        <h2 class="cat-title">${c.page
+          ? `<a href="${c.page}" class="cat-link"><span class="en">${c.name}</span><span class="ar">${c.nameAr}</span></a>`
+          : `<span class="en">${c.name}</span><span class="ar">${c.nameAr}</span>`}</h2>
         <div class="cat-ar">${c.nameAr}</div>
         ${c.blurb ? `<p class="cat-blurb"><span class="en">${c.blurb}</span><span class="ar">${c.blurbAr}</span></p>` : ''}
         <div class="items">
           ${c.items.map(i => `
             <article class="item">
-              <h3 class="item-name"><span class="en">${i.name}</span><span class="ar">${i.nameAr}</span></h3>
+              <h3 class="item-name">${i.page
+                ? `<a href="${i.page}" class="item-link"><span class="en">${i.name}</span><span class="ar">${i.nameAr}</span></a>`
+                : `<span class="en">${i.name}</span><span class="ar">${i.nameAr}</span>`}</h3>
               <div class="item-ar">${i.nameAr}</div>
               ${i.desc ? `<p class="item-desc"><span class="en">${i.desc}</span><span class="ar">${i.descAr}</span></p>` : ''}
               ${i.tags.length ? `<div class="item-tags">${i.tags.map(t =>
