@@ -3,7 +3,7 @@
   "_note": "Prices deliberately omitted. Pricing and live availability live on order.jjchicken.com (ChatFood) so the website can never carry a stale number.",
   "categories": [
     {
-      "id": "grills", "name": "Signature Grills", "nameAr": "المشاوي المميّزة",
+      "id": "grills", "page": "menu/charcoal-grilled-chicken.html", "name": "Signature Grills", "nameAr": "المشاوي المميّزة",
       "blurb": "Charcoal chicken, the way we have cooked it since 2010.",
       "blurbAr": "دجاج على الفحم، بالطريقة التي نطبخه بها منذ ٢٠١٠.",
       "items": [
@@ -16,7 +16,7 @@
       "blurb": "Signature grilled chicken, real flavours, and sides worth showing up for.",
       "blurbAr": "دجاج مشوي مميّز، نكهات حقيقية، وأطباق جانبية تستحق الحضور.",
       "items": [
-        {"name":"Tawouk Platter","nameAr":"طبق طاووق","desc":"Charcoal grilled tawouk, served with french fries, dipping sauce, pickles and Arabic bread.","descAr":"طاووق مشوي على الفحم، يُقدَّم مع بطاطا مقلية، صلصة تغميس، مخلل وخبز عربي.","tags":["sig"],"flavours":false},
+        {"page":"menu/tawouk-platter.html","name":"Tawouk Platter","nameAr":"طبق طاووق","desc":"Charcoal grilled tawouk, served with french fries, dipping sauce, pickles and Arabic bread.","descAr":"طاووق مشوي على الفحم، يُقدَّم مع بطاطا مقلية، صلصة تغميس، مخلل وخبز عربي.","tags":["sig"],"flavours":false},
         {"name":"Lamb Tikka Platter","nameAr":"طبق لحم غنم مشوي","desc":"Charcoal grilled lamb tikka, served with french fries, dipping sauce, pickles and Arabic bread.","descAr":"تكا لحم مشوية على الفحم، تُقدَّم مع بطاطا مقلية، صلصة تغميس، مخلل وخبز عربي.","tags":[],"flavours":false},
         {"name":"Kafta Platter","nameAr":"طبق كفتة","desc":"Charcoal grilled kafta, served with french fries, dipping sauce, pickles and Arabic bread.","descAr":"كفتة مشوية على الفحم، تُقدَّم مع بطاطا مقلية، صلصة تغميس، مخلل وخبز عربي.","tags":[],"flavours":false},
         {"name":"Mixed Grill Platter","nameAr":"طبق مشاوي مشكّلة","desc":"One skewer of grilled chicken tawouk, one of grilled lamb tikka and two of kafta. Served with spicy bread, grilled onions, grilled tomato, pickles and garlic dip.","descAr":"سيخ طاووق دجاج مشوي، سيخ تكا خروف، وسيخان كفتة. يُقدَّم مع خبز مع البهارات، بصل مشوي، طماطم مشوية، مخلل وصلصة ثوم.","tags":["best"],"flavours":false}
@@ -27,9 +27,9 @@
       "blurb": "",
       "blurbAr": "",
       "items": [
-        {"name":"JJ W Batata","nameAr":"جي جي وبطاطا","desc":"Two pieces of grilled chicken breast topped with crispy potato slices and JJ special batata sauce. Served with dip, pickles and Arabic bread.","descAr":"قطعتان من صدر الدجاج المشوي مع شرائح بطاطا مقرمشة وصلصة البطاطا الخاصة بـ ج ج. يُقدَّم مع مخلل وخبز عربي.","tags":["sig","best"],"flavours":false},
+        {"page":"menu/jj-w-batata.html","name":"JJ W Batata","nameAr":"جي جي وبطاطا","desc":"Two pieces of grilled chicken breast topped with crispy potato slices and JJ special batata sauce. Served with dip, pickles and Arabic bread.","descAr":"قطعتان من صدر الدجاج المشوي مع شرائح بطاطا مقرمشة وصلصة البطاطا الخاصة بـ ج ج. يُقدَّم مع مخلل وخبز عربي.","tags":["sig","best"],"flavours":false},
         {"name":"JJ Roasted Platter","nameAr":"طبق جي جي المشوي","desc":"Two pieces of grilled chicken breast, your choice of flavour. Served with baby potatoes, grilled vegetables, garlic dip, pickles and Arabic bread.","descAr":"قطعتان من صدر الدجاج المشوي بنكهة من اختيارك. يُقدَّم مع بطاطا صغيرة، خضار مشوية، صوص ثوم، مخلل وخبز عربي.","tags":[],"flavours":true},
-        {"name":"JJ Breast Platter","nameAr":"طبق صدر جي جي","desc":"Two pieces of grilled chicken breast, your choice of flavour. Served with your choice of side, garlic dip, pickles and Arabic bread.","descAr":"قطعتان من صدر الدجاج المشوي بنكهة من اختيارك. يُقدَّم مع طبق جانبي من اختيارك، صوص ثوم، مخلل وخبز عربي.","tags":[],"flavours":true},
+        {"page":"menu/chicken-breast-platter.html","name":"JJ Breast Platter","nameAr":"طبق صدر جي جي","desc":"Two pieces of grilled chicken breast, your choice of flavour. Served with your choice of side, garlic dip, pickles and Arabic bread.","descAr":"قطعتان من صدر الدجاج المشوي بنكهة من اختيارك. يُقدَّم مع طبق جانبي من اختيارك، صوص ثوم، مخلل وخبز عربي.","tags":[],"flavours":true},
         {"name":"JJ W Rez","nameAr":"طبق جي جي ورز","desc":"JJ savoury rice mixed with minced beef and nuts, topped with grilled chicken breast. Served with yogurt.","descAr":"رز ج ج المتبّل مع لحم مفروم ومكسرات، مع صدر دجاج مشوي فوقه. يُقدَّم مع لبن.","tags":["sig"],"flavours":false}
       ]
     },
@@ -49,7 +49,7 @@
       "blurb": "",
       "blurbAr": "",
       "items": [
-        {"name":"Shawarma Rolls","nameAr":"شاورما رولز","desc":"Two chicken shawarma sandwiches rolled and cut into eight pieces, garnished with garlic, pickles and biwas. Served with fries.","descAr":"سندويشان شاورما دجاج ملفوفان ومقطعان إلى ٨ قطع، مزيّنان بالثوم والمخلل والبيواز. يُقدَّمان مع بطاطا مقلية.","tags":["best"],"flavours":false},
+        {"page":"menu/shawarma-rolls.html","name":"Shawarma Rolls","nameAr":"شاورما رولز","desc":"Two chicken shawarma sandwiches rolled and cut into eight pieces, garnished with garlic, pickles and biwas. Served with fries.","descAr":"سندويشان شاورما دجاج ملفوفان ومقطعان إلى ٨ قطع، مزيّنان بالثوم والمخلل والبيواز. يُقدَّمان مع بطاطا مقلية.","tags":["best"],"flavours":false},
         {"name":"Shawarma Platter","nameAr":"صحن شاورما","desc":"Chicken shawarma with french fries, pickles, garlic and Arabic bread.","descAr":"شاورما دجاج مع بطاطا مقلية، مخلل، ثوم وخبز عربي.","tags":[],"flavours":false},
         {"name":"Hummus Shawarma","nameAr":"شاورما بالحمص","desc":"Chicken shawarma slices served over hummus with Arabic bread.","descAr":"شرائح شاورما دجاج تُقدَّم فوق الحمص مع خبز عربي.","tags":["sig"],"flavours":false},
         {"name":"Shawarma Sandwich","nameAr":"سندويش شاورما","desc":"Chicken shawarma with pickles and garlic sauce, wrapped in Arabic or saj bread. Regular or large.","descAr":"شاورما دجاج مع مخلل وصلصة ثوم، ملفوفة بخبز عربي أو خبز صاج. عادي أو كبير.","tags":[],"flavours":false},

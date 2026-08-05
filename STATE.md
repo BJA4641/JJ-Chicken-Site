@@ -21,6 +21,7 @@
 | ✅ | `about.html` — name story, vision, mission, history timeline, why charcoal, Almed Retail |
 | ✅ | Branch register digitised from Almed's Physical Locations spreadsheet |
 | ✅ | Al Shamkha removed, Silicon Central DSO added, per instruction |
+| ✅ | `menu/` — five dish pages, generated from `menu.json`, linked from the menu |
 
 ## In progress
 
@@ -53,6 +54,31 @@
 ---
 
 ## Decisions this session
+
+- Five dish pages added under `menu/`: charcoal-grilled-chicken, tawouk-platter,
+  chicken-breast-platter, jj-w-batata, shawarma-rolls. Sitemap 17 → 22.
+
+- Pages are **generated from `menu.json`**, not hand-written. Every dish name,
+  Arabic name and description is read from the data file so the pages cannot
+  drift from the menu. The prep copy is lifted verbatim from `index.html`, which
+  already carried it in both languages — nothing about sourcing or method was
+  invented.
+
+- `charcoal-grilled-chicken` has no matching item in `menu.json` — the target
+  term is category-level. It is built from the **Signature Grills** category and
+  lists both grill items. Its h1 in both languages already existed in
+  `index.html`.
+
+- Internal linking is data-driven, per the house rule against hand-writing cards.
+  A `page` field was added to the four items and the one category in
+  `menu.json`; `site.js` renders the title as a link when that field is present.
+  Five one-line data edits, no markup duplicated.
+
+- **`locations/*.html` have incomplete heads** — canonical only, no `hreflang`,
+  no Open Graph, no Twitter card. The dish pages therefore follow `menu.html`'s
+  head pattern instead. All twelve branch pages should be brought up to the same
+  standard; not done here. Their pagehead copy is also English-only, missing
+  `.ar` spans, which is a house-rule violation predating this work.
 
 - Leaflet vendored to `assets/vendor/leaflet/` (js, css, 5 images). unpkg is a
   free community CDN with no uptime guarantee; the store locator must not depend
@@ -123,7 +149,15 @@
 ## Known issues
 
 - Arabic strings are agency-drafted and unreviewed. Do not ship to client
-  without a native Gulf reviewer.
+  without a native Gulf reviewer. **Eight new Arabic UI labels were written for
+  the dish pages and are also unreviewed** — they are the only invented Arabic in
+  that work; every dish name, description and prep line was reused from existing
+  repo content:
+  `القائمة الكاملة` (See the full menu) · `كل الفروع` (All branches) ·
+  `كيف يُحضَّر` (How it is prepared) · `اختر نكهتك` (Choose your flavour) ·
+  `متوفّر في الفروع الاثني عشر جميعها` (Available at all 12 branches) ·
+  `في دبي وأبوظبي. اعثر على أقرب فرع إليك.` (Across Dubai and Abu Dhabi…) ·
+  `أطباق ذات صلة` (Related dishes) · `على القائمة` (On the menu)
 - `menu.json` Wings and Salads categories are empty; they are filtered out of the
   render rather than shown as empty sections.
 - Silicon Central has `lat`/`lng` of `null` and a `#` map link.
