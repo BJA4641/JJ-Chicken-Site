@@ -54,6 +54,29 @@
 
 ## Decisions this session
 
+- Leaflet vendored to `assets/vendor/leaflet/` (js, css, 5 images). unpkg is a
+  free community CDN with no uptime guarantee; the store locator must not depend
+  on it. Both files verify byte-for-byte against the SRI hashes that were in
+  `locations.html`, confirming authentic upstream 1.9.4. `integrity`/`crossorigin`
+  dropped — they only apply to cross-origin loads.
+
+- `preview.html` got Leaflet **inlined** rather than pointed at
+  `assets/vendor/`. It is a single-file build meant to travel on its own; a
+  relative path would have broken that silently. Marker images are data URIs.
+  Verified: with every external host blocked it renders 11 pins, where the
+  previous CDN version rendered none.
+
+- **The map still depends on a second third party.** Basemap tiles come from
+  `basemaps.cartocdn.com` (`assets/js/site.js`). If CARTO is down the cards and
+  pins still render but the map is blank. Vendoring tiles is not practical —
+  a paid provider with an SLA or a static fallback image would be the fix.
+  Not addressed here.
+
+- **No generator for `preview.html` exists in this repo**, though the docs
+  describe it as generated and never hand-edited. It was updated by a scripted,
+  deterministic transform. The missing generator is a real gap — `preview.html`
+  can drift from the source pages with nothing to catch it.
+
 - Repo structure repaired. The GitHub web uploads had paired filenames with the
   wrong contents — a file named `site.js` held schema JSON, one named `ROADMAP.md`
   held the stylesheet, `download` held a branch page. A later upload fixed
